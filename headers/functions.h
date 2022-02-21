@@ -8,6 +8,7 @@
 
 int FindNumberFilesInsideDir(const char *dir);
 char **FindFilesInsideDir(const char *dir, int *nf);
+void ParseFilesInsideDir(const char *dir, int *nfiles, int **qnt, char ****parsed);
 
 
 #endif
@@ -56,7 +57,9 @@ char **FindFilesInsideDir(const char *dir_, int *nf_)
             int r2 = strcmp("..", dir->d_name);
             if (r1 != 0 && r2 != 0)
             {
-                files[i] = dir->d_name;
+                int n = snprintf(NULL, 0, "%s/%s", dir_, dir->d_name);
+                files[i] = new char[n];
+                snprintf(files[i], n + 1, "%s/%s", dir_, dir->d_name);
                 i++;
             }
         }
@@ -67,4 +70,19 @@ char **FindFilesInsideDir(const char *dir_, int *nf_)
         fprintf(stderr, "COULD NOT OPEN DIR: %s: %s\n", dir_, strerror(errno));
     }
     return files;
+}
+
+void ParseFilesInsideDir(const char *dir, int *nfiles, int **qnt, char ****parsed)
+{
+    char **files = FindFilesInsideDir(dir, nfiles);
+    char **stringsF = new char*[*nfiles];
+
+    *qnt = new int[*nfiles];
+    *parsed = new char**[*nfiles];
+
+    for (int i = 0; i < *nfiles; i++)
+    {
+        ReadFile(files[i], &stringsF[i]);
+        (*parsed)[i] = Parse(stringsF[i], &(*qnt)[i]);
+    }
 }
