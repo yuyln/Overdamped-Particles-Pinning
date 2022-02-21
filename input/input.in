@@ -1,0 +1,12 @@
+Number of Steps N: 50000
+Simulation Time tmax: 500.0
+Box Length LX: 36.0
+Box Length LY: 36.0
+AC in X Factor ACXFA: 1.0
+AC in Y Factor ACYFA: 1.0
+AC in X Fixed ACXFI: 0.0
+AC in Y Fixed ACYFI: 0.0
+DC Factor DCFA: 1.0
+DC Angle (degrees) DCANG: 0.0
+DC Fixed DCFI: 0.0
+DC Fixed Angle (degrees) DCANGFI: 0.0

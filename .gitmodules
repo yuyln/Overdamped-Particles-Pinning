@@ -1,0 +1,9 @@
+[submodule "FileParser"]
+	path = FileParser
+	url = https://github.com/yuyln/FileParser.git
+[submodule "Profiler"]
+	path = Profiler
+	url = https://github.com/yuyln/Profiler.git
+[submodule "OpenCLWrapper"]
+	path = OpenCLWrapper
+	url = https://github.com/yuyln/OpenCLWrapper.git
