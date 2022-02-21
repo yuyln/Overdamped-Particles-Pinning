@@ -8,6 +8,8 @@
 #include <parser.h>
 #include <dirent.h>
 #include <functions.h>
+#include <besselfunc.h>
+#include <particle.h>
 
 int main()
 {   

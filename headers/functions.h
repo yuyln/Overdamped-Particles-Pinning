@@ -10,9 +10,6 @@ int FindNumberFilesInsideDir(const char *dir);
 char **FindFilesInsideDir(const char *dir, int *nf);
 void ParseFilesInsideDir(const char *dir, int *nfiles, int **qnt, char ****parsed);
 
-
-#endif
-
 int FindNumberFilesInsideDir(const char *dir_)
 {
     DIR *d;
@@ -86,3 +83,4 @@ void ParseFilesInsideDir(const char *dir, int *nfiles, int **qnt, char ****parse
         (*parsed)[i] = Parse(stringsF[i], &(*qnt)[i]);
     }
 }
+#endif
