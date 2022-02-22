@@ -9,13 +9,19 @@
 
 #include <table.h>
 
-Table ExpT;
+typedef struct ExpTable
+{
+    TableParams params;
+    double *table;
+} ExpTable;
+
+ExpTable ExpT;
 
 void InitExpTable(double factor, int n, double limit)
 {
-    ExpT.TN = n;
-    ExpT.TLimit = limit;
-    ExpT.TAtLimit = exp(-limit);
+    ExpT.params.TN = n;
+    ExpT.params.TLimit = limit;
+    ExpT.params.TAtLimit = exp(-limit);
     double x = 0.0;
     double y = exp(-x);
     double h = 0.0001;
@@ -24,30 +30,30 @@ void InitExpTable(double factor, int n, double limit)
         x += h;
         y = exp(-x);
     }
-    ExpT.TCut = x;
-    ExpT.TH = x / (double)ExpT.TN;
-    ExpT.table = new double[ExpT.TN + 1];
+    ExpT.params.TCut = x;
+    ExpT.params.TH = x / (double)ExpT.params.TN;
+    ExpT.table = new double[ExpT.params.TN + 1];
     x = 0.0;
-    for (size_t i = 0; i < ExpT.TN + 1; i++)
+    for (size_t i = 0; i < ExpT.params.TN + 1; i++)
     {
         ExpT.table[i] = exp(-x);
-        x += ExpT.TH;
+        x += ExpT.params.TH;
     }
 }
 
 double GetExpTable(double x)
 {
-    if (x >= ExpT.TCut)
+    if (x >= ExpT.params.TCut)
     {
         return 0.0;
     }
 
-    if (x <= ExpT.TLimit)
+    if (x <= ExpT.params.TLimit)
     {
-        return ExpT.TAtLimit;
+        return ExpT.params.TAtLimit;
     }
 
-    size_t i = x / ExpT.TH;
+    size_t i = x / ExpT.params.TH;
     return ExpT.table[i];
 }
 

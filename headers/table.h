@@ -7,8 +7,8 @@
 
 typedef struct
 {
-    double *table, TCut, TH, TLimit, TAtLimit;
+    double TCut, TH, TLimit, TAtLimit;
     size_t TN;
-} Table;
+} TableParams;
 
 #endif

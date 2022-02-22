@@ -11,12 +11,6 @@ typedef struct Particle
     double x, y;
 } Particle;
 
-Particle InitParticle(double betadamp_, double U0_, double x_, double y_);
-
-double PotentialParticle(const Particle *cur, const Particle *other);
-void ForceParticle(const Particle *cur, const Particle *other, double &fx, double &fy);
-
-
 Particle InitParticle(double betadamp_, double U0_, double x_, double y_)
 {
     Particle p;
@@ -28,12 +22,12 @@ Particle InitParticle(double betadamp_, double U0_, double x_, double y_)
     return p;
 }
 
-double PotentialParticle(const Particle *cur, const Particle *other)
+double PotentialParticle(const Particle *cur, const Particle *other, const double &dx_, const double &dy_)
 {
     double dx, dy, d;
-    dx = cur->x - other->x;
-    dy = cur->y - other->y;
-    if (dx > Bess0T.TCut || dy > Bess0T.TCut)
+    dx = cur->x + dx_ - other->x;
+    dy = cur->y + dy_ - other->y;
+    if (dx > Bess0T.params.TCut || dy > Bess0T.params.TCut)
     {
         return 0.0;
     }
@@ -47,12 +41,13 @@ double PotentialParticle(const Particle *cur, const Particle *other)
     return cur->U0 * other->U0 * GetBess0Table(d);
 }
 
-void ForceParticle(const Particle *cur, const Particle *other, double &fx, double &fy)
+void ForceParticle(const Particle *cur, const Particle *other, 
+                   const double &dx_, const double &dy_, double &fx, double &fy)
 {
     double dx, dy, d;
-    dx = cur->x - other->x;
-    dy = cur->y - other->y;
-    if (dx > Bess1T.TCut || dy > Bess1T.TCut)
+    dx = cur->x + dx_ - other->x;
+    dy = cur->y + dy_ - other->y;
+    if (dx > Bess1T.params.TCut || dy > Bess1T.params.TCut)
     {
         fx = 0.0;
         fy = 0.0;

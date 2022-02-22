@@ -12,6 +12,7 @@
 #include <exptable.h>
 #include <bessel0table.h>
 #include <bessel1table.h>
+#include <pinning.h>
 
 int main()
 {   
@@ -62,6 +63,19 @@ int main()
         fprintf(f, "%.3f\t%.3f\n", x, GetExpTable(x * x / (0.3 * 0.3)));
     }
 
+    fclose(f);
+
+    f = fopen("pin.out", "wb");
+    Pinning p = InitPinning(0.0, 0.0, 1.0, 0.3);
+    Pinning p2 = InitPinning(1.0, 0.0, -1.0, 0.3);
+
+    for (double x = -5.0; x <= 5.0; x += 0.05)
+    {
+        for (double y = -5.0; y <= 5.0; y += 0.05)
+        {
+            fprintf(f, "%.3f\t%.3f\t%.3f\n", x, y, PotentialPinning(&p, x, y) + PotentialPinning(&p2, x, y));
+        }
+    }
     fclose(f);
 
     return 0;

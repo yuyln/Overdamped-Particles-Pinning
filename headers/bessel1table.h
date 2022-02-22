@@ -9,45 +9,51 @@
 
 #include <table.h>
 
-Table Bess1T;
+typedef struct Bess1Table
+{
+    TableParams params;
+    double *table;
+} Bess1Table;
+
+Bess1Table Bess1T;
 
 void InitBess1Table(double factor, int n, double limit)
 {
-    Bess1T.TN = n;
-    Bess1T.TLimit = limit;
-    Bess1T.TAtLimit = BESSK1(limit);
+    Bess1T.params.TN = n;
+    Bess1T.params.TLimit = limit;
+    Bess1T.params.TAtLimit = BESSK0(limit);
     double x = 0.0;
-    double y = BESSK1(x);
+    double y = BESSK0(x);
     double h = 0.0001;
     while (y >= factor)
     {
         x += h;
-        y = BESSK1(x);
+        y = BESSK0(x);
     }
-    Bess1T.TCut = x;
-    Bess1T.TH = x / (double)Bess1T.TN;
-    Bess1T.table = new double[Bess1T.TN + 1];
+    Bess1T.params.TCut = x;
+    Bess1T.params.TH = x / (double)Bess1T.params.TN;
+    Bess1T.table = new double[Bess1T.params.TN + 1];
     x = 0.0;
-    for (size_t i = 0; i < Bess1T.TN + 1; i++)
+    for (size_t i = 0; i < Bess1T.params.TN + 1; i++)
     {
-        Bess1T.table[i] = BESSK1(x);
-        x += Bess1T.TH;
+        Bess1T.table[i] = BESSK0(x);
+        x += Bess1T.params.TH;
     }
 }
 
 double GetBess1Table(double x)
 {
-    if (x >= Bess1T.TCut)
+    if (x >= Bess1T.params.TCut)
     {
         return 0.0;
     }
 
-    if (x <= Bess1T.TLimit)
+    if (x <= Bess1T.params.TLimit)
     {
-        return Bess1T.TAtLimit;
+        return Bess1T.params.TAtLimit;
     }
 
-    size_t i = x / Bess1T.TH;
+    size_t i = x / Bess1T.params.TH;
     return Bess1T.table[i];
 }
 
