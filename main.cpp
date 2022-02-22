@@ -6,10 +6,12 @@
 #include <profiler.h>
 #include <OpenCLWrapper.h>
 #include <parser.h>
-#include <dirent.h>
 #include <functions.h>
 #include <besselfunc.h>
 #include <particle.h>
+#include <exptable.h>
+#include <bessel0table.h>
+#include <bessel1table.h>
 
 int main()
 {   
@@ -27,5 +29,40 @@ int main()
     {
         printf("%f %f\n", strtod(parsed[0][i], NULL), strtod(parsed[0][i + 1], NULL));
     }
+
+    InitBess0Table(1.0e-4, 1e7, 1.0);
+    InitBess1Table(1.0e-4, 1e7, 1.0);
+
+    FILE *f = fopen("bess0.out", "wb");
+
+    double h = 0.01;
+
+    for (double x = -1.0; x <= 10.0; x += h)
+    {
+        fprintf(f, "%.3f\t%.3f\n", x, GetBess0Table(x));
+    }
+
+    fclose(f);
+
+    f = fopen("bess1.out", "wb");
+
+    for (double x = -1.0; x <= 10.0; x += h)
+    {
+        fprintf(f, "%.3f\t%.3f\n", x, GetBess1Table(x));
+    }
+
+    fclose(f);
+
+    InitExpTable(1.0e-4, 1e7, 0.0);
+
+    f = fopen("exp.out", "wb");
+
+    for (double x = -1.0; x <= 10.0; x += h)
+    {
+        fprintf(f, "%.3f\t%.3f\n", x, GetExpTable(x * x / (0.3 * 0.3)));
+    }
+
+    fclose(f);
+
     return 0;
 }

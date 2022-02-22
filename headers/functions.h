@@ -1,5 +1,6 @@
 #ifndef __FUNCS
 #define __FUNCS
+#ifndef OPENCLCOMP
 #include <dirent.h>
 #include <cstdlib>
 #include <cstdio>
@@ -83,4 +84,5 @@ void ParseFilesInsideDir(const char *dir, int *nfiles, int **qnt, char ****parse
         (*parsed)[i] = Parse(stringsF[i], &(*qnt)[i]);
     }
 }
-#endif
+#endif //OPENCL
+#endif //HEADERGUARD
