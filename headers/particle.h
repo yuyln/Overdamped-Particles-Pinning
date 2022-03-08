@@ -22,11 +22,11 @@ Particle InitParticle(double betadamp_, double U0_, double x_, double y_)
     return p;
 }
 
-double PotentialParticle(const Particle *cur, const Particle *other, const double &dx_, const double &dy_)
+double PotentialParticle(const Particle *cur, const double x, const double y)
 {
     double dx, dy, d;
-    dx = cur->x + dx_ - other->x;
-    dy = cur->y + dy_ - other->y;
+    dx = cur->x - x;
+    dy = cur->y - y;
     if (dx > Bess0T.params.TCut || dy > Bess0T.params.TCut)
     {
         return 0.0;
@@ -38,33 +38,33 @@ double PotentialParticle(const Particle *cur, const Particle *other, const doubl
     }
 
     d = sqrt(dx * dx + dy * dy);
-    return cur->U0 * other->U0 * GetBess0Table(d);
+    return cur->U0 * GetBess0Table(d);
 }
 
-void ForceParticle(const Particle *cur, const Particle *other, 
-                   const double &dx_, const double &dy_, double &fx, double &fy)
+void ForceParticle(const Particle *interact, const double x, double y, 
+                   double *fx, double *fy)
 {
     double dx, dy, d;
-    dx = cur->x + dx_ - other->x;
-    dy = cur->y + dy_ - other->y;
+    dx = interact->x - x;
+    dy = interact->y - y;
     if (dx > Bess1T.params.TCut || dy > Bess1T.params.TCut)
     {
-        fx = 0.0;
-        fy = 0.0;
+        *fx = 0.0;
+        *fy = 0.0;
         return;
     }
 
     if (dx == 0.0 && dy == 0.0)
     {
-        fx = 0.0;
-        fy = 0.0;
+        *fx = 0.0;
+        *fy = 0.0;
         return;
     }
 
     d = sqrt(dx * dx + dy * dy);
     double d1 = 1.0 / d;
-    double Bes = cur->U0 * other->U0 * GetBess1Table(d);
-    fx = Bes * dx * d1;
-    fy = Bes * dy * d1;
+    double Bes = interact->U0 * GetBess1Table(d);
+    *fx = Bes * dx * d1;
+    *fy = Bes * dy * d1;
 }
 #endif
