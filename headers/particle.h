@@ -1,8 +1,6 @@
 #ifndef __PARTICLE
 #define __PARTICLE
 #include <cmath>
-#include <bessel0table.h>
-#include <bessel1table.h>
 
 
 typedef struct Particle
@@ -22,7 +20,7 @@ Particle InitParticle(double betadamp_, double U0_, double x_, double y_)
     return p;
 }
 
-double PotentialParticle(const Particle *cur, const double x, const double y)
+double PotentialParticle(const Particle *cur, const double &x, const double &y)
 {
     double dx, dy, d;
     dx = cur->x - x;
@@ -41,7 +39,7 @@ double PotentialParticle(const Particle *cur, const double x, const double y)
     return cur->U0 * GetBess0Table(d);
 }
 
-void ForceParticle(const Particle *interact, const double x, double y, 
+void ForceParticle(const Particle *interact, const double &x, double &y, 
                    double *fx, double *fy)
 {
     double dx, dy, d;

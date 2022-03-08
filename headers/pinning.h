@@ -1,9 +1,6 @@
 #ifndef __PINNING
 #define __PINNING
-#ifndef OPENCLCOMP
 #include <cmath>
-#endif
-#include <exptable.h>
 
 typedef struct Pinning
 {
@@ -24,7 +21,7 @@ Pinning InitPinning(double x, double y, double U0, double R0)
     return p;
 }
 
-double PotentialPinning(const Pinning *p, const double x, const double y)
+double PotentialPinning(const Pinning *p, const double &x, const double &y)
 {
     double dx = x - p->x;
     double dy = y - p->y;
@@ -32,7 +29,7 @@ double PotentialPinning(const Pinning *p, const double x, const double y)
     return p->U0 * GetExpTable(d2 / p->R02);
 }
 
-void ForcePinning(const Pinning *p, const double x, const double y, double *fx, double *fy)
+void ForcePinning(const Pinning *p, const double &x, const double &y, double *fx, double *fy)
 {
     double dx = x - p->x;
     double dy = y - p->y;
@@ -46,6 +43,11 @@ void ForcePinning(const Pinning *p, const double x, const double y, double *fx, 
     double e = GetExpTable(d2 / p->R02);
     *fx = p->F0 * e * dx;
     *fy = p->F0 * e * dy;
+}
+
+void CreatePinningBoxes(ExpBoxes *b, Pinning *p, int nP)
+{
+    //TODO: achar range maximo.
 }
 
 
