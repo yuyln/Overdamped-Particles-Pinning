@@ -28,7 +28,7 @@ void InteractWithBox(const double &x, const double &y, const size_t iX, const si
         int factorX = right - left;
         for (int j = -1; j <= 1; ++j)
         {
-            int iBy = (int)iY + i;
+            int iBy = (int)iY + j;
             bool down = iBy < 0;
             bool up = iBy >= (int)Box.nRows;
             if (up)

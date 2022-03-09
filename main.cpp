@@ -18,7 +18,7 @@ int main()
 {
     Simulator s;
 
-    s.FixCurrent(0.0);
+    s.FixCurrent(2.0);
     Integration(s);
     return 0;
 }

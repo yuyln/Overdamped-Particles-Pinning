@@ -94,6 +94,7 @@ typedef struct Simulator
 
         PinningBoxes = CreateBoxes(R0Max * sqrt(ExpTable.getMaxRange()), nPinnings, Lx, Ly, pins);
         ParticleBoxes = CreateBoxes(BK1Table.getMaxRange(), nParticles, Lx, Ly, parts);
+        AttBoxes(nPinnings, pins, &PinningBoxes);
     }
 
     void FixCurrent(double FC_)
