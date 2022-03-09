@@ -13,4 +13,4 @@ DC Fixed Angle (degrees) DCANGFI: 0.0
 Number of Oscilation in X NACX: 100
 Number of Oscilation in Y NACY: 100
 Cut Factor NCut: 50
-Write to File WRITE: 1
+Write to File WRITE: 0

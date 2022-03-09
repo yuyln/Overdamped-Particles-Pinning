@@ -280,7 +280,6 @@ void WriteToFile(Simulator &s, const char *prefix, const char *suffix)
         fprintf(f, "%.5f\t%.5f\n", s.WriteX[t_ * s.nParticles + i], s.WriteY[t_ * s.nParticles + i]);
     }
     fclose(f);
-
 }
 
 void Integration(Simulator &s)
@@ -288,25 +287,22 @@ void Integration(Simulator &s)
     for (size_t i = 0; i < s.N; ++i)
     {
         AttBoxes(s.nParticles, s.parts, &s.ParticleBoxes);
-        // printf("----\n %f %f\n", s.parts[0].x, s.parts[0].y);
-        // for (size_t j = s.ParticleBoxes.nRows; j --> 0;)
-        // {
-        //     for (size_t i = 0; i < s.ParticleBoxes.nCols; ++i)
-        //     {
-        //         printf("%zu ", s.ParticleBoxes(j, i).GetIn());
-        //     }
-        //     printf("\n");
-        // }
-        // printf("----\n");
         double t = i * s.h;
         for (size_t ip = 0; ip < s.nParticles; ++ip)
         {
             Att(ip, t, s);
+            s.VXm += s.parts[ip].Vx;
+            s.VYm += s.parts[ip].Vy;
         }
         Boundary(s);
         Reset(s);
         AttWrite(s, i);
     }
     WriteToFile(s, "", "");
+    FILE *vel = fopen("./out/velocity.out", "a");
+    s.VXm /= (double) s.N;
+    s.VYm /= (double) s.N;
+    int i = fprintf(vel, "%.15f\t%.15f\t%.15f\n", s.FC, s.VXm, s.VYm);
+    fclose(vel);
 }
 #endif

@@ -16,6 +16,8 @@ typedef struct Simulator
     Particle *parts;
     Particle *parts1;
 
+    double VXm, VYm;
+
     double FC;
 
     double omegaX, omegaY;

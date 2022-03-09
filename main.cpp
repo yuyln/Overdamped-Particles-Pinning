@@ -16,9 +16,22 @@
 
 int main()
 {
+    FILE *f = fopen("./out/velocity.out", "w");
+    fclose(f);
     Simulator s;
-    //TODO: mena velocity out and save/load system
-    s.FixCurrent(2.0);
-    Integration(s);
+    //TODO: save/load system
+    //      output simulator object
+
+    StartMeasure("ALL");
+    for (int t = 0; t < 1000; ++t)
+    {
+        double FC = t * 0.003;
+        s.FixCurrent(FC);
+        Integration(s);
+        printf("%.2f\n", (double)t / (double)1000 * 100.0);
+    }
+    EndMeasure("ALL");
+    PrintAll(stdout);
+
     return 0;
 }
