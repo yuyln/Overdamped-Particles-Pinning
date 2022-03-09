@@ -42,6 +42,8 @@ typedef struct Simulator
 
     Simulator()
     {
+        system("mkdir out");
+        system("mkdir \"out/positions\"");
         nPinnings = InitPinnings(&pins);
         nParticles = InitParticles(&parts);
         InitParticles(&parts1);
@@ -67,10 +69,10 @@ typedef struct Simulator
         B_F = GetValueDouble("ACYFI", d, nData);
 
         DCFactor = GetValueDouble("DCFA", d, nData);
-        DCAng = GetValueDouble("DCANG", d, nData);
+        DCAng = GetValueDouble("DCANG", d, nData) * M_PIl / 180.0;
 
         DCFixed = GetValueDouble("DCFI", d, nData);
-        DCFixedAng = GetValueDouble("DCANGFI", d, nData);
+        DCFixedAng = GetValueDouble("DCANGFI", d, nData) * M_PIl / 180.0;
         DCFixedX = DCFixed * cos(DCFixedAng);
         DCFixedY = DCFixed * sin(DCFixedAng);
         sqrtTemp = 0.0;
