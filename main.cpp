@@ -17,7 +17,7 @@
 int main()
 {
     Simulator s;
-
+    //TODO: mena velocity out and save/load system
     s.FixCurrent(2.0);
     Integration(s);
     return 0;
