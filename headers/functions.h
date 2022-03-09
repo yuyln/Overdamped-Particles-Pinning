@@ -8,12 +8,19 @@
 #include <pinning.h>
 #include <parser.h>
 #include <particle.h>
+#include <matrix.h>
+#include <box.h>
 
 int FindNumberFilesInsideDir(const char *dir);
 char **FindFilesInsideDir(const char *dir, int *nf);
 void ParseFilesInsideDir(const char *dir, int *nfiles, int **qnt, char ****parsed);
 int InitPinnings(Pinning **p);
 int InitParticles(Particle **p);
+
+inline double myrandom() noexcept
+{
+    return (double)rand() / RAND_MAX;
+}
 
 
 int FindNumberFilesInsideDir(const char *dir_)
@@ -85,7 +92,9 @@ void ParseFilesInsideDir(const char *dir, int *nfiles, int **qnt, char ****parse
 
     for (int i = 0; i < *nfiles; i++)
     {
-        ReadFile(files[i], &stringsF[i]);
+        FILE *f = fopen(files[i], "rb");
+        stringsF[i] = ReadFile(f);
+        fclose(f);
         (*parsed)[i] = Parse(stringsF[i], &(*qnt)[i]);
     }
 }
@@ -118,7 +127,7 @@ int InitPinnings(Pinning **p)
         {
             double x = strtod(parsed[i][j], NULL);
             double y = strtod(parsed[i][j + 1], NULL);
-            (*p)[j_] = InitPinning(x, y, U0, R0);
+            (*p)[j_] = Pinning(x, y, U0, R0);
             j_++;
         }
     }
@@ -153,12 +162,39 @@ int InitParticles(Particle **p)
         {
             double x = strtod(parsed[i][j], NULL);
             double y = strtod(parsed[i][j + 1], NULL);
-            (*p)[j_] = InitParticle(betadamp, U0, x, y);
+            (*p)[j_] = Particle(betadamp, U0, x, y);
             j_++;
         }
     }
     return nP;
 }
 
+template <typename E>
+Matrix<Box> CreateBoxes(double range, size_t nPar, double Lx, double Ly, const E* const p)
+{
+    if (range > Lx || range > Ly)
+    {
+        fprintf(stderr, "Range Bigger Than Box\n");
+        exit(1);
+    }
+
+    size_t nx = floor(Lx / range);
+    size_t ny = floor(Ly / range);
+    double lx = Lx / (double)nx;
+    double ly = Ly / (double)ny;
+
+    Matrix<Box>out(nx, ny);
+    for (size_t i = 0; i < nx; ++i)
+    {
+        double x = lx * i;
+        for (size_t j = 0; j < ny; ++j)
+        {
+            double y = ly * j;
+            out.SetData(Box(lx, ly, x, y, nPar), j, i);
+            out(i, j).AttBox(p, nPar);
+        }
+    }
+    return out;
+}
 
 #endif //HEADERGUARD
