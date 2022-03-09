@@ -7,8 +7,8 @@
 #include <errno.h>
 static const double pi = acos(-1.0);
 
-template <typename T>
-void InteractWithBox(const double &x, const double &y, const size_t iX, const size_t iY, const double &Lx, const double &Ly, 
+template <typename T, bool ig=false>
+void InteractWithBox(const size_t &ic, const double &x, const double &y, const size_t iX, const size_t iY, const double &Lx, const double &Ly, 
                      const Matrix<Box> &Box, const T *p, const Table &table, double &fxO, double &fyO)
 {
     double fx_ = 0.0, fy_ = 0.0;
@@ -45,6 +45,7 @@ void InteractWithBox(const double &x, const double &y, const size_t iX, const si
             {
                 double fx, fy;
                 size_t I = Box(iBy, iBx).GetIndex(iB);
+                if (ig) { if (I == ic) { continue; } }
                 T::Force(&p[I], x - factorX * Lx, y - factorY * Ly, table, &fx, &fy);
                 fx_ += fx;
                 fy_ += fy;
@@ -55,7 +56,7 @@ void InteractWithBox(const double &x, const double &y, const size_t iX, const si
     fyO = fy_;
 }
 
-void InteractWithBoxParticle(const size_t &ic, const double &x, const double &y, const size_t iX, const size_t iY, const double &Lx, const double &Ly, 
+/*void InteractWithBoxParticle(const size_t &ic, const double &x, const double &y, const size_t iX, const size_t iY, const double &Lx, const double &Ly, 
                      const Matrix<Box> &Box, const Particle *p, const Table &table, double &fxO, double &fyO)
 {
     double fx_ = 0.0, fy_ = 0.0;
@@ -92,7 +93,7 @@ void InteractWithBoxParticle(const size_t &ic, const double &x, const double &y,
             {
                 double fx, fy;
                 size_t I = Box(iBy, iBx).GetIndex(iB);
-                if (I == ic) { continue; }
+                // if (ignore) { if (I == ic) { continue; } }
                 Particle::Force(&p[I], x - factorX * Lx, y - factorY * Ly, table, &fx, &fy);
                 fx_ += fx;
                 fy_ += fy;
@@ -101,7 +102,7 @@ void InteractWithBoxParticle(const size_t &ic, const double &x, const double &y,
     }
     fxO = fx_;
     fyO = fy_;
-}
+}*/
 
 void Force(const double &x, const double &y, const size_t &i, const double &t, const Simulator &sim, double &fxO, double &fyO)
 {
@@ -129,7 +130,7 @@ void Force(const double &x, const double &y, const size_t &i, const double &t, c
         BoxYPin = sim.PinningBoxes.nRows - 1;
     }
 
-    InteractWithBox(x, y, BoxXPin, BoxYPin, sim.Lx, sim.Ly, sim.PinningBoxes, sim.pins, sim.ExpTable, fxPin, fyPin);
+    InteractWithBox<Pinning, false>(i, x, y, BoxXPin, BoxYPin, sim.Lx, sim.Ly, sim.PinningBoxes, sim.pins, sim.ExpTable, fxPin, fyPin);
 
     int BoxXPart = x / sim.ParticleBoxes(0, 0).GetLx();
     int BoxYPart = y / sim.ParticleBoxes(0, 0).GetLy();
@@ -152,7 +153,7 @@ void Force(const double &x, const double &y, const size_t &i, const double &t, c
         BoxYPart = sim.ParticleBoxes.nRows - 1;
     }
 
-    InteractWithBoxParticle(i, x, y, BoxXPart, BoxYPart, sim.Lx, sim.Ly, sim.ParticleBoxes, sim.parts, sim.BK1Table, fxPart, fyPart);
+    InteractWithBox<Particle, true>(i, x, y, BoxXPart, BoxYPart, sim.Lx, sim.Ly, sim.ParticleBoxes, sim.parts, sim.BK1Table, fxPart, fyPart);
 
     fx = fxPart + fxPin;
     fy = fyPart + fyPin;
