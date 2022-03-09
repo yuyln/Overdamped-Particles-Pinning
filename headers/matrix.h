@@ -6,9 +6,9 @@ template <typename T>
 class Matrix
 {
     T *m;
-    Matrix() = delete;
 public:
     size_t nRows, nCols;
+    Matrix(){};
     Matrix(size_t nRows_, size_t nCols_): nRows(nRows_), nCols(nCols_)
     {
         m = new T[nRows * nCols];

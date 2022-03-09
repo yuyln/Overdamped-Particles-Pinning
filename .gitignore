@@ -4,3 +4,4 @@
 *.sh
 program
 *.py
+*.position

@@ -1,7 +1,4 @@
-Pinning Radius R0: 1.0
-Pinning Strength U0: 1.0
+Pinning Radius R0: 0.1
+Pinning Strength U0: 0.0
 Positions: 
 1.0 1.0
-2.0 5.0
-15.0 16.1
-35.0 35.0

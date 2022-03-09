@@ -17,8 +17,8 @@ public:
     static double Potential(const Particle *cur, const double &x, const double &y, const Table &table) noexcept
     {
         double dx, dy, d;
-        dx = cur->x - x;
-        dy = cur->y - y;
+        dx = x - cur->x;
+        dy = y - cur->y;
         if (dx > table.getMaxRange() || dy > table.getMaxRange())
         {
             return 0.0;
@@ -37,8 +37,8 @@ public:
                        double *fx, double *fy) noexcept
     {
         double dx, dy, d;
-        dx = interact->x - x;
-        dy = interact->y - y;
+        dx = x - interact->x;
+        dy = y - interact->y;
         if (dx > table.getMaxRange() || dy > table.getMaxRange())
         {
             *fx = 0.0;

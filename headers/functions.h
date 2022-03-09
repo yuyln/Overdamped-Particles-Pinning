@@ -1,5 +1,7 @@
 #ifndef __FUNCS
 #define __FUNCS
+#define PARSER_IMPLEMENTATION
+#define PROFILER_IMPLEMENTATION
 #include <dirent.h>
 #include <cstdlib>
 #include <cstdio>
@@ -21,7 +23,6 @@ inline double myrandom() noexcept
 {
     return (double)rand() / RAND_MAX;
 }
-
 
 int FindNumberFilesInsideDir(const char *dir_)
 {
@@ -195,6 +196,18 @@ Matrix<Box> CreateBoxes(double range, size_t nPar, double Lx, double Ly, const E
         }
     }
     return out;
+}
+
+template <typename E>
+void AttBoxes(size_t nPar, const E* const p, Matrix<Box> *out)
+{
+    for (size_t i = 0; i < out->nCols; ++i)
+    {
+        for (size_t j = 0; j < out->nRows; ++j)
+        {
+            (*out)(j, i).AttBox(p, nPar);
+        }
+    }
 }
 
 #endif //HEADERGUARD

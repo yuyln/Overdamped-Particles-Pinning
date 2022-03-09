@@ -8,9 +8,10 @@ class Table
     const double zero = 0.0;
     double minrange, maxrange, *values, stepsize;
     size_t n;
+
 public:
     std::function<double(double)> f;
-    Table() = delete;
+    Table(){}
 
     Table(size_t n_, double minValue, double minrange_, std::function<double(double)> f): minrange(minrange_), n(n_)
     {
@@ -57,6 +58,15 @@ public:
 
     const double &getMaxRange() const { return maxrange; }
     const double &getStepSize() const { return stepsize; }
+
+    void operator=(Table l2)
+    {
+        minrange = l2.minrange;
+        maxrange = l2.maxrange;
+        values = l2.values;
+        stepsize = l2.stepsize;
+        n = l2.n;
+    }
 };
 
 #endif
