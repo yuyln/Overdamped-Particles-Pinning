@@ -54,10 +54,10 @@ public:
         }
 
         d = sqrt(dx * dx + dy * dy);
-        double d1 = 1.0 / d;
+        // double d1 = 1.0 / d;
         double Bes = interact->U0 * table(d);
-        *fx = Bes * dx * d1;
-        *fy = Bes * dy * d1;
+        *fx = Bes * dx/* * d1*/;
+        *fy = Bes * dy/* * d1*/;
     }
 };
 

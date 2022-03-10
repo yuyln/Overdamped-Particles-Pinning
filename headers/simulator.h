@@ -86,12 +86,12 @@ typedef struct Simulator
         omegaX = tmax / GetValueDouble("NACX", d, nData);
         omegaY = tmax / GetValueDouble("NACY", d, nData);
 
-        ExpTable = Table(100000, 1.0e-4, 0.0, [](double x)
+        ExpTable = Table(1000000, 0.21e-3, 0.0, [](double x)
                            { return exp(-x); });
-        BK0Table = Table(100000, 1.0e-4, 1.0, [](double x)
+        BK0Table = Table(1000000, 0.21e-3, 1.0, [](double x)
                            { return BESSK0(x); });
-        BK1Table = Table(100000, 1.0e-4, 1.0, [](double x)
-                           { return BESSK1(x); });
+        BK1Table = Table(1000000, 0.21e-3, 1.0, [](double x)
+                           { return BESSK1(x) / x; });
 
         double R0Max = -1.0;
         for (size_t i = 0; i < nPinnings; ++i)

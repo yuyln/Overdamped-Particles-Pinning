@@ -26,6 +26,7 @@ int main()
     {
         s.LoadSystem("", "");
     }
+    // s.Export("");
 
     StartMeasure("ALL");
     for (double FC = s.FC; FC <= s.FCMax; FC += s.hFC)
