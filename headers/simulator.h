@@ -7,6 +7,7 @@
 #include <particle.h>
 #include <pinning.h>
 #include <functions.h>
+#include <map>
 
 typedef struct Simulator
 {
@@ -15,9 +16,10 @@ typedef struct Simulator
     Pinning *pins;
     Particle *parts;
     Particle *parts1;
+    std::map<double, size_t> betaQnt;
+    std::map<double, double> VmxBeta, VmyBeta;
 
     double VXm, VYm;
-    double *Vxm_ind, *Vym_ind;
 
     double FC, FCMax, hFC;
     size_t NCurrents;
@@ -26,7 +28,7 @@ typedef struct Simulator
     double ACXFactor, ACYFactor;
     double A, B;
     double A_F, B_F;
-    
+
     double DCFactor;
     double DCX, DCY;
     double DCAng;
@@ -48,6 +50,16 @@ typedef struct Simulator
         nPinnings = InitPinnings(&pins);
         nParticles = InitParticles(&parts);
         InitParticles(&parts1);
+        for (size_t i = 0; i < nParticles; ++i)
+        {
+            betaQnt[parts[i].betadamp] = 0;
+        }
+
+        for (size_t i = 0; i < nParticles; ++i)
+        {
+            betaQnt[parts[i].betadamp]++;
+        }
+
         FILE *f = fopen64("./input/input.in", "rb");
         char *data = ReadFile(f);
         fclose(f);
@@ -87,11 +99,11 @@ typedef struct Simulator
         omegaY = tmax / GetValueDouble("NACY", d, nData);
 
         ExpTable = Table(1000000, 0.21e-3, 0.0, [](double x)
-                           { return exp(-x); });
+                         { return exp(-x); });
         BK0Table = Table(1000000, 0.21e-3, 1.0, [](double x)
-                           { return BESSK0(x); });
+                         { return BESSK0(x); });
         BK1Table = Table(1000000, 0.21e-3, 1.0, [](double x)
-                           { return BESSK1(x) / x; });
+                         { return BESSK1(x) / x; });
 
         double R0Max = -1.0;
         for (size_t i = 0; i < nPinnings; ++i)
@@ -113,6 +125,7 @@ typedef struct Simulator
             system("mkdir \"out/positions\"");
             system("mkdir saves");
             system("mkdir \"saves/snaps\"");
+            system("mkdir \"./out/velocity_per_beta\"");
             if (!Recovery)
             {
                 FILE *f = fopen("./out/velocity.out", "wb");
@@ -130,6 +143,23 @@ typedef struct Simulator
                     exit(1);
                 }
                 fclose(f);
+
+                for (std::map<double, size_t>::iterator i = betaQnt.begin(); i != betaQnt.end(); ++i)
+                {
+                    double betadamp = i->first;
+                    char *name;
+                    size_t size = snprintf(NULL, 0, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
+                    name = new char[size + 1];
+                    snprintf(name, size, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
+                    f = fopen(name, "wb");
+                    delete[] name;
+                    if (f == NULL)
+                    {
+                        fprintf(stderr, "NOT POSSIBLE TO OPEN FILE %s: %s\n", name, strerror(errno));
+                        exit(1);
+                    }
+                    fclose(f);
+                }
             }
         }
     }
@@ -166,7 +196,6 @@ typedef struct Simulator
         size_t i = nParticles - 1;
         fprintf(f, "%.17f\t%.17f\n", parts[i].x, parts[i].y);
         fclose(f);
-
 
         size = snprintf(NULL, 0, "./saves/snaps/%s_snap_%.5f_%s.snap", prefix, FC, suffix);
         name = new char[size + 1];
@@ -267,14 +296,59 @@ typedef struct Simulator
         fprintf(f, "Size of Boxes in Y for Particle Potential: %.6f\n", ParticlePotentialBoxes(0, 0).GetLy());
         fprintf(f, "Number of Boxes in X for Particle Potential: %zu\n", ParticlePotentialBoxes.nCols);
         fprintf(f, "Number of Boxes in Y for Particle Potential: %zu\n", ParticlePotentialBoxes.nRows);
-        #if defined(RK4)
+#if defined(RK4)
         fprintf(f, "Integration Method: Runge-Kutta 4\n");
-        #elif defined(RK2)
+#elif defined(RK2)
         fprintf(f, "Integration Method: Runge-Kutta 2\n");
-        #elif defined(EULER)
+#elif defined(EULER)
         fprintf(f, "Integration Method: Euler\n");
-        #endif
+#endif
         fclose(f);
+    }
+
+    void ZeroVelocity()
+    {
+        VXm = 0.0;
+        VYm = 0.0;
+        for (size_t i = 0; i < nParticles; ++i)
+        {
+            parts[i].Vxm = 0.0;
+            parts[i].Vym = 0.0;
+        }
+
+        for (std::map<double, size_t>::iterator i = betaQnt.begin(); i != betaQnt.end(); ++i)
+        {
+            double beta = i->first;
+            VmxBeta[beta] = 0.0;
+            VmyBeta[beta] = 0.0;
+        }
+    }
+
+    void CalculateAverageVelocity()
+    {
+        for (size_t i = 0; i < nParticles; ++i)
+        {
+            VXm += parts[i].Vxm / (double)nParticles;
+            VYm += parts[i].Vym / (double)nParticles;
+        }
+    }
+
+    // TODO: change how this is implemented
+    void CalculateAverageVelocityPerBeta()
+    {
+        for (std::map<double, size_t>::iterator i = betaQnt.begin(); i != betaQnt.end(); ++i)
+        {
+            double beta = i->first;
+            size_t qnt = i->second;
+            for (size_t j = 0; j < nParticles; ++j)
+            {
+                if (beta == parts[j].betadamp)
+                {
+                    VmxBeta[beta] += parts[j].Vxm / (double)qnt;
+                    VmyBeta[beta] += parts[j].Vym / (double)qnt;
+                }
+            }
+        }
     }
 } Simulator;
 #endif

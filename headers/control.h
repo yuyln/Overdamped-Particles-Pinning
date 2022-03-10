@@ -231,8 +231,14 @@ void Att(const size_t &i, const double &t, Simulator &s)
     Step(i, t, s, fx, fy);
     s.parts1[i].x = s.parts[i].x + fx;
     s.parts1[i].y = s.parts[i].y + fy;
+
     s.parts[i].Vx = (s.parts1[i].x - s.parts[i].x) / s.h;
     s.parts[i].Vy = (s.parts1[i].y - s.parts[i].y) / s.h;
+    s.parts[i].Vxm += s.parts[i].Vx / (double)s.N;
+    s.parts[i].Vym += s.parts[i].Vy / (double)s.N;
+
+    s.parts1[i].Vxm = s.parts[i].Vxm;
+    s.parts1[i].Vym = s.parts[i].Vym;
 }
 
 void Reset(Simulator &s)
@@ -285,9 +291,8 @@ void WriteToFile(Simulator &s, const char *prefix, const char *suffix)
 
 void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
 {
+    s.ZeroVelocity();
     s.SaveSystem(prefixSave, suffixSave);
-    s.VXm = 0.0;
-    s.VYm = 0.0;
     for (size_t i = 0; i < s.N; ++i)
     {
         AttBoxes(s.nParticles, s.parts, &s.ParticleBoxes);
@@ -295,8 +300,6 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
         for (size_t ip = 0; ip < s.nParticles; ++ip)
         {
             Att(ip, t, s);
-            s.VXm += s.parts[ip].Vx;
-            s.VYm += s.parts[ip].Vy;
         }
         Boundary(s);
         Reset(s);
@@ -304,9 +307,28 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
     }
     WriteToFile(s, prefixSave, suffixSave);
     FILE *vel = fopen("./out/velocity.out", "a");
-    s.VXm /= (double) s.N;
-    s.VYm /= (double) s.N;
+    s.CalculateAverageVelocity();
     fprintf(vel, "%.15f\t%.15f\t%.15f\n", s.FC, s.VXm, s.VYm);
     fclose(vel);
+
+    s.CalculateAverageVelocityPerBeta();
+    for (std::map<double, size_t>::iterator i = s.betaQnt.begin(); i != s.betaQnt.end(); ++i)
+    {
+        double betadamp = i->first;
+        char *name;
+        size_t size = snprintf(NULL, 0, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
+        name = new char[size + 1];
+        snprintf(name, size, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
+        FILE *f = fopen(name, "a");
+        delete[] name;
+        if (f == NULL)
+        {
+            fprintf(stderr, "NOT POSSIBLE TO OPEN FILE %s: %s\n", name, strerror(errno));
+            exit(1);
+        }
+        fprintf(f, "%.15f\t%.15f\t%.15f\n", s.FC, s.VmxBeta[betadamp], s.VmyBeta[betadamp]);
+        fclose(f);
+    }
+
 }
 #endif

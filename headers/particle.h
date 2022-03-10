@@ -6,9 +6,9 @@
 class Particle
 {
 public:
-    double x, y, beta, damp, U0, Vx, Vy;
+    double x, y, beta, damp, U0, Vx, Vy, Vxm, Vym, betadamp;
     Particle() {}
-    Particle(double betadamp_, double U0_, double x_, double y_) : x(x_), y(y_), U0(U0_)
+    Particle(double betadamp_, double U0_, double x_, double y_) : x(x_), y(y_), U0(U0_), betadamp(betadamp_)
     {
         damp = 1.0 / sqrt(betadamp_ * betadamp_ + 1.0);
         beta = betadamp_ * damp;
