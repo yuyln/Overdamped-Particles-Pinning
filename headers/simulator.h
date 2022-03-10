@@ -197,9 +197,9 @@ typedef struct Simulator
         fprintf(f, "%.17f\t%.17f\n", parts[i].x, parts[i].y);
         fclose(f);
 
-        size = snprintf(NULL, 0, "./saves/snaps/%s_snap_%.5f_%s.snap", prefix, FC, suffix);
+        size = snprintf(NULL, 0, "./saves/snaps/%s_snap_%.5f_%d_%s.snap", prefix, FC, (int)(FC / hFC), suffix);
         name = new char[size + 1];
-        snprintf(name, size + 1, "./saves/snaps/%s_snap_%.5f_%s.snap", prefix, FC, suffix);
+        snprintf(name, size + 1, "./saves/snaps/%s_snap_%.5f_%d_%s.snap", prefix, FC, (int)(FC / hFC), suffix);
         f = fopen(name, "wb");
         delete[] name;
         if (f == NULL)
