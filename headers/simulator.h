@@ -11,7 +11,7 @@
 typedef struct Simulator
 {
     Table ExpTable, BK0Table, BK1Table;
-    Matrix<Box> PinningBoxes, ParticleBoxes;
+    Matrix<Box> PinningBoxes, ParticleBoxes, ParticlePotentialBoxes;
     Pinning *pins;
     Particle *parts;
     Particle *parts1;
@@ -104,6 +104,7 @@ typedef struct Simulator
         FC = 0.0;
         PinningBoxes = CreateBoxes(R0Max * sqrt(ExpTable.getMaxRange()), nPinnings, Lx, Ly, pins);
         ParticleBoxes = CreateBoxes(BK1Table.getMaxRange(), nParticles, Lx, Ly, parts);
+        ParticlePotentialBoxes = CreateBoxes(BK0Table.getMaxRange(), nParticles, Lx, Ly, parts);
         AttBoxes(nPinnings, pins, &PinningBoxes);
 
         if (CreateFoldersEtc)
@@ -220,6 +221,60 @@ typedef struct Simulator
         }
         delete[] d;
         AttBoxes(nParticles, parts, &ParticleBoxes);
+    }
+
+    void Export(const char *name)
+    {
+        FILE *f = fopen(name, "wb");
+        if (f == NULL)
+        {
+            fprintf(stderr, "NOT POSSIBLE TO OPEN FILE %s: %s", name, strerror(errno));
+            exit(1);
+        }
+        fprintf(f, "Integration Steps: %zu\n", N);
+        fprintf(f, "Integration Time: %.6f\n", tmax);
+        fprintf(f, "Integration Step: %.6f\n", h);
+        fprintf(f, "Current Steps: %zu\n", NCurrents);
+        fprintf(f, "Max Current: %.6f\n", FCMax);
+        fprintf(f, "Current Step: %.6f\n", hFC);
+        fprintf(f, "Number of Particles: %zu\n", nParticles);
+        fprintf(f, "Number of Pinnings: %zu\n", nPinnings);
+        fprintf(f, "AC Factor in X: %.6f\n", ACXFactor);
+        fprintf(f, "AC Factor in Y: %.6f\n", ACYFactor);
+        fprintf(f, "Omega in X: %.6f\n", omegaX);
+        fprintf(f, "Omega in Y: %.6f\n", omegaY);
+        fprintf(f, "DC Factor: %.6f\n", DCFactor);
+        fprintf(f, "DC Angle (degrees): %.6Lf\n", DCAng * 180.0 / M_PIl);
+        fprintf(f, "AC in X Fixed: %.6f\n", A_F);
+        fprintf(f, "AC in Y Fixed: %.6f\n", B_F);
+        fprintf(f, "DC Fixed: %.6f\n", DCFixed);
+        fprintf(f, "DC Fixed Angle: %.6Lf\n", DCFixedAng * 180.0 / M_PIl);
+        fprintf(f, "Recovery Mode: %d\n", Recovery);
+        fprintf(f, "Write Positions: %d\n", Write);
+        fprintf(f, "Cut Factor for Writing: %zu\n", NCut);
+        fprintf(f, "EXP Cutoff: %.6f\n", ExpTable.getMaxRange());
+        fprintf(f, "BK0 Cutoff: %.6f\n", BK0Table.getMaxRange());
+        fprintf(f, "BK1 Cutoff: %.6f\n", BK1Table.getMaxRange());
+        fprintf(f, "Size of Boxes in X for Pinning: %.6f\n", PinningBoxes(0, 0).GetLx());
+        fprintf(f, "Size of Boxes in Y for Pinning: %.6f\n", PinningBoxes(0, 0).GetLy());
+        fprintf(f, "Number of Boxes in X for Pinning: %zu\n", PinningBoxes.nCols);
+        fprintf(f, "Number of Boxes in Y for Pinning: %zu\n", PinningBoxes.nRows);
+        fprintf(f, "Size of Boxes in X for Particle: %.6f\n", ParticleBoxes(0, 0).GetLx());
+        fprintf(f, "Size of Boxes in Y for Particle: %.6f\n", ParticleBoxes(0, 0).GetLy());
+        fprintf(f, "Number of Boxes in X for Particle: %zu\n", ParticleBoxes.nCols);
+        fprintf(f, "Number of Boxes in Y for Particle: %zu\n", ParticleBoxes.nRows);
+        fprintf(f, "Size of Boxes in X for Particle Potential: %.6f\n", ParticlePotentialBoxes(0, 0).GetLx());
+        fprintf(f, "Size of Boxes in Y for Particle Potential: %.6f\n", ParticlePotentialBoxes(0, 0).GetLy());
+        fprintf(f, "Number of Boxes in X for Particle Potential: %zu\n", ParticlePotentialBoxes.nCols);
+        fprintf(f, "Number of Boxes in Y for Particle Potential: %zu\n", ParticlePotentialBoxes.nRows);
+        #if defined(RK4)
+        fprintf(f, "Integration Method: Runge-Kutta 4\n");
+        #elif defined(RK2)
+        fprintf(f, "Integration Method: Runge-Kutta 2\n");
+        #elif defined(EULER)
+        fprintf(f, "Integration Method: Euler\n");
+        #endif
+        fclose(f);
     }
 } Simulator;
 #endif

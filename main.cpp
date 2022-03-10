@@ -19,14 +19,14 @@ int main()
 {
     Simulator s(true);
     //TODO: save/load system           (V)
-    //      output simulator object    (X)
+    //      output simulator object    (V)
     //      GSA                        (X) 
 
     if (s.Recovery)
     {
         s.LoadSystem("", "");
     }
-    // s.Export("");
+    s.Export("./out/simulator_data.out");
 
     StartMeasure("ALL");
     for (double FC = s.FC; FC <= s.FCMax; FC += s.hFC)
