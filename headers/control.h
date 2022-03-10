@@ -283,8 +283,11 @@ void WriteToFile(Simulator &s, const char *prefix, const char *suffix)
     fclose(f);
 }
 
-void Integration(Simulator &s)
+void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
 {
+    s.SaveSystem(prefixSave, suffixSave);
+    s.VXm = 0.0;
+    s.VYm = 0.0;
     for (size_t i = 0; i < s.N; ++i)
     {
         AttBoxes(s.nParticles, s.parts, &s.ParticleBoxes);
@@ -299,11 +302,11 @@ void Integration(Simulator &s)
         Reset(s);
         AttWrite(s, i);
     }
-    WriteToFile(s, "", "");
+    WriteToFile(s, prefixSave, suffixSave);
     FILE *vel = fopen("./out/velocity.out", "a");
     s.VXm /= (double) s.N;
     s.VYm /= (double) s.N;
-    int i = fprintf(vel, "%.15f\t%.15f\t%.15f\n", s.FC, s.VXm, s.VYm);
+    fprintf(vel, "%.15f\t%.15f\t%.15f\n", s.FC, s.VXm, s.VYm);
     fclose(vel);
 }
 #endif

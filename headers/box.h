@@ -30,7 +30,6 @@ public:
     }
 
     const size_t & GetIn() const noexcept { return nIn; }
-    // const size_t * const GetIndexes() const noexcept { return indexes; }
     const size_t & GetIndex(const size_t &i) const noexcept { return indexes[i]; }
     const double & GetLx() const noexcept { return lx; }
     const double & GetLy() const noexcept { return ly; }

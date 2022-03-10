@@ -17,19 +17,22 @@
 
 int main()
 {
-    FILE *f = fopen("./out/velocity.out", "w");
-    fclose(f);
-    Simulator s;
-    //TODO: save/load system
-    //      output simulator object
+    Simulator s(true);
+    //TODO: save/load system           (V)
+    //      output simulator object    (X)
+    //      GSA                        (X) 
+
+    if (s.Recovery)
+    {
+        s.LoadSystem("", "");
+    }
 
     StartMeasure("ALL");
-    for (int t = 0; t < 1000; ++t)
+    for (double FC = s.FC; FC <= s.FCMax; FC += s.hFC)
     {
-        double FC = t * 0.003;
         s.FixCurrent(FC);
-        Integration(s);
-        printf("%.2f\n", (double)t / (double)1000 * 100.0);
+        Integration(s, "", "");
+        printf("%.4f %.4f\n", FC, s.FCMax);
     }
     EndMeasure("ALL");
     PrintAll(stdout);

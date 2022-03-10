@@ -6,3 +6,7 @@ program
 *.py
 *.position
 *.gcda
+*.save
+*.snap
+out
+saves

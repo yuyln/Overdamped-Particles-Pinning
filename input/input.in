@@ -1,5 +1,7 @@
 Number of Steps N: 500000
 Simulation Time tmax: 500.0
+Number of Current Steps CURRSTEPS: 1000
+Max Current Value FCMAX: 1.0
 Box Length LX: 36.0
 Box Length LY: 36.0
 AC in X Factor ACXFA: 0.0
@@ -12,5 +14,7 @@ DC Fixed DCFI: 0.0
 DC Fixed Angle (degrees) DCANGFI: 0.0
 Number of Oscilation in X NACX: 100
 Number of Oscilation in Y NACY: 100
-Cut Factor NCut: 50
-Write to File WRITE: 1
+Temperature TEMP: 0.0
+Cut Factor NCut: 100
+Write to File WRITE: 0
+Recovery Mode RECOVERY: 1
