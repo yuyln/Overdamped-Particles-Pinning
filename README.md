@@ -2,10 +2,10 @@
 
 This code simulates overdamped particles that follows the Langevin equation:
 
-<p align="center"><img src="svgs/b99f817a3683fa5bc589d21e3121fe8f.svg?invert_in_darkmode" align=middle width=320.49067379999997pt height=39.26959575pt/></p>
+<p align="center"><img src="svgs/885e61cb3afce16640aae6a0e448d303.svg?invert_in_darkmode" align=middle width=320.49067379999997pt height=39.26959575pt/></p>
 
 Where 
-<img src="svgs/0374c41447147ca3648ee247708ef2dc.svg?invert_in_darkmode" align=middle width=22.847224949999998pt height=14.611878600000017pt/> 
+<img src="svgs/5474c8baa2bc6feabb0eac4237772aab.svg?invert_in_darkmode" align=middle width=14.628015599999989pt height=14.611878600000017pt/> 
 is the particle velocity, 
 <img src="svgs/2c81a6cce979f48f11d65a4ff4c3e36a.svg?invert_in_darkmode" align=middle width=25.5779337pt height=14.15524440000002pt/> 
 is the damping constant, that arises from
