@@ -14,19 +14,37 @@
 #include <matrix.h>
 #include <control.h>
 #include <simulator.h>
+#include <GSA.h>
 
 int main()
 {
     Simulator s(true);
+    s.Export("./out/simulator_data.out");
     //TODO: save/load system           (V)
     //      output simulator object    (V)
-    //      GSA                        (X) 
+    //      GSA                        (V?) 
+
+    GSAParams gsap;
+    gsap.innerLoop = 100000;
+    gsap.outerLoop = 5;
+    gsap.printParam = gsap.innerLoop / 5;
+    gsap.qA = 2.8;
+    gsap.qT = 2.2;
+    gsap.qV = 2.6;
+
+    gsap.T0 = 10.0;
+    GSA(gsap, s);
+
+    gsap.T0 = 5.0;
+    GSA(gsap, s);
+
+    gsap.T0 = 1.0;
+    GSA(gsap, s);
 
     if (s.Recovery)
     {
         s.LoadSystem("", "");
     }
-    s.Export("./out/simulator_data.out");
 
     StartMeasure("ALL");
     for (double FC = s.FC; FC <= s.FCMax; FC += s.hFC)

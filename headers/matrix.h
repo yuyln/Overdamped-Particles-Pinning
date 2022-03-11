@@ -16,7 +16,7 @@ public:
 
     T & operator()(size_t i, size_t j) const noexcept { return m[i * nCols + j]; }
     T & operator()(size_t i) const noexcept { return m[i]; }
-    void SetData(const T &data, size_t i, size_t j) noexcept { m[i * nCols + j] = data; }
+    void SetData(const T *data, size_t i, size_t j) noexcept { if (data == NULL) { return; } m[i * nCols + j] = *data; }
     void SetData(const T** data) noexcept
     {
         for (size_t i = 0; i < nRows; ++i)

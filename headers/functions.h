@@ -191,15 +191,16 @@ Matrix<Box> CreateBoxes(double range, size_t nPar, double Lx, double Ly, const E
         for (size_t j = 0; j < ny; ++j)
         {
             double y = ly * j;
-            out.SetData(Box(lx, ly, x, y, nPar), j, i);
-            out(i, j).AttBox(p, nPar);
+            Box aux(lx, ly, x, y, nPar);
+            out.SetData(&aux, j, i);
+            out(j, i).AttBox(p, nPar); //?
         }
     }
     return out;
 }
 
 template <typename E>
-void AttBoxes(size_t nPar, const E* const p, Matrix<Box> *out)
+void AttBoxes(const size_t &nPar, const E* p, Matrix<Box> *out)
 {
     for (size_t i = 0; i < out->nCols; ++i)
     {

@@ -7,6 +7,21 @@
 #include <errno.h>
 static const double pi = acos(-1.0);
 
+int FindBox(const double &p, const double &BoxSize, const size_t &nMax)
+{
+    int Box = p / BoxSize;
+
+    if (Box >= (int)nMax)
+    {
+        Box = 0;
+    }
+    else if (Box < 0)
+    {
+        Box = nMax - 1;
+    }
+    return Box;
+}
+
 template <typename T, bool ig=false>
 void InteractWithBox(const size_t &ic, const double &x, const double &y, const size_t iX, const size_t iY, const double &Lx, const double &Ly, 
                      const Matrix<Box> &Box, const T *p, const Table &table, double &fxO, double &fyO)
@@ -54,6 +69,74 @@ void InteractWithBox(const size_t &ic, const double &x, const double &y, const s
     }
     fxO = fx_;
     fyO = fy_;
+}
+
+
+template <typename T, bool ig=false>
+double InteractWithBoxPotential(const size_t &ic, const double &x, const double &y, const size_t iX, const size_t iY, const double &Lx, const double &Ly, 
+                     const Matrix<Box> &Box, const T *p, const Table &table)
+{
+    double ret = 0.0;
+    for (int i = -1; i <= 1; ++i)
+    {
+        int iBx = (int)iX + i;
+        bool left = iBx < 0;
+        bool right = iBx >= (int)Box.nCols;
+        if (right)
+        {
+            iBx = 0;
+        }
+        else if (left)
+        {
+            iBx = Box.nCols - 1;
+        }
+        int factorX = right - left;
+        for (int j = -1; j <= 1; ++j)
+        {
+            int iBy = (int)iY + j;
+            bool down = iBy < 0;
+            bool up = iBy >= (int)Box.nRows;
+            if (up)
+            {
+                iBy = 0;
+            }
+            else if (down)
+            {
+                iBy = Box.nRows - 1;
+            }
+            int factorY = up - down;
+
+            for (size_t iB = 0; iB < Box(iBy, iBx).GetIn(); ++iB)
+            {
+                size_t I = Box(iBy, iBx).GetIndex(iB);
+                if (ig) { if (I == ic) { continue; } }
+                ret += T::Potential(&p[I], x - factorX * Lx, y - factorY * Ly, table);
+            }
+        }
+    }
+    return ret;
+}
+
+double Potential(const Simulator &s, const Particle *p)
+{
+    double retPin = 0.0, retPart = 0.0;
+    for (size_t i = 0; i < s.nParticles; ++i)
+    {
+        int BoxXPin = FindBox(p[i].x, s.PinningBoxes(0, 0).GetLx(), s.PinningBoxes.nCols);
+        int BoxYPin = FindBox(p[i].y, s.PinningBoxes(0, 0).GetLy(), s.PinningBoxes.nRows);
+
+        retPin += InteractWithBoxPotential<Pinning, false>(i, p[i].x, p[i].y, BoxXPin, BoxYPin, s.Lx, s.Ly, s.PinningBoxes, s.pins, s.ExpTable);
+    }
+
+    for (size_t i = 0; i < s.nParticles; ++i)
+    {
+        int BoxXPart = FindBox(p[i].x, s.ParticlePotentialBoxes(0, 0).GetLx(), s.ParticlePotentialBoxes.nCols);
+        int BoxYPart = FindBox(p[i].y, s.ParticlePotentialBoxes(0, 0).GetLy(), s.ParticlePotentialBoxes.nRows);
+
+        retPart += InteractWithBoxPotential<Particle, true>(i, p[i].x, p[i].y, BoxXPart, BoxYPart, s.Lx, s.Ly, s.ParticlePotentialBoxes, p, s.BK0Table);
+    }
+
+    return retPin + retPart / 2.0;
 }
 
 /*void InteractWithBoxParticle(const size_t &ic, const double &x, const double &y, const size_t iX, const size_t iY, const double &Lx, const double &Ly, 
@@ -109,49 +192,13 @@ void Force(const double &x, const double &y, const size_t &i, const double &t, c
     double fxPart = 0.0, fyPart = 0.0;
     double fxPin = 0.0, fyPin = 0.0;
     double fx = 0.0, fy = 0.0;
-    int BoxXPin = x / sim.PinningBoxes(0, 0).GetLx();
-    int BoxYPin = y / sim.PinningBoxes(0, 0).GetLy();
-
-    if (BoxXPin >= (int)sim.PinningBoxes.nCols)
-    {
-        BoxXPin = 0;
-    }
-    else if (BoxXPin < 0)
-    {
-        BoxXPin = sim.PinningBoxes.nCols - 1;
-    }
-
-    if (BoxYPin >= (int)sim.PinningBoxes.nRows)
-    {
-        BoxYPin = 0;
-    }
-    else if (BoxYPin < 0)
-    {
-        BoxYPin = sim.PinningBoxes.nRows - 1;
-    }
+    int BoxXPin = FindBox(x, sim.PinningBoxes(0, 0).GetLx(), sim.PinningBoxes.nCols);
+    int BoxYPin = FindBox(y, sim.PinningBoxes(0, 0).GetLy(), sim.PinningBoxes.nRows);
 
     InteractWithBox<Pinning, false>(i, x, y, BoxXPin, BoxYPin, sim.Lx, sim.Ly, sim.PinningBoxes, sim.pins, sim.ExpTable, fxPin, fyPin);
 
-    int BoxXPart = x / sim.ParticleBoxes(0, 0).GetLx();
-    int BoxYPart = y / sim.ParticleBoxes(0, 0).GetLy();
-
-    if (BoxXPart >= (int)sim.ParticleBoxes.nCols)
-    {
-        BoxXPart = 0;
-    }
-    else if (BoxXPart < 0)
-    {
-        BoxXPart = sim.ParticleBoxes.nCols - 1;
-    }
-
-    if (BoxYPart >= (int)sim.ParticleBoxes.nRows)
-    {
-        BoxYPart = 0;
-    }
-    else if (BoxYPart < 0)
-    {
-        BoxYPart = sim.ParticleBoxes.nRows - 1;
-    }
+    int BoxXPart = FindBox(x, sim.ParticleBoxes(0, 0).GetLx(), sim.ParticleBoxes.nCols);
+    int BoxYPart = FindBox(y, sim.ParticleBoxes(0, 0).GetLy(), sim.ParticleBoxes.nRows);
 
     InteractWithBox<Particle, true>(i, x, y, BoxXPart, BoxYPart, sim.Lx, sim.Ly, sim.ParticleBoxes, sim.parts, sim.BK1Table, fxPart, fyPart);
 
