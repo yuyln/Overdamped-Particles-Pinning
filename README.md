@@ -88,7 +88,7 @@ lower values less repulsive (if `U0<0` then the particles will be attractive). `
 is used for `BETADAMP`, as `BETADAMP`
 <img src="svgs/c6412ef4a1bf3c4ea666b2bee45af636.svg?invert_in_darkmode" align=middle width=50.54575019999999pt height=36.3965877pt/>.
 
-The pinning files is the same, changing `BETADAMP` to `R0`, where `R0`<img src="svgs/17d8b0c8defe55d3706e7b9fdf06aab0.svg?invert_in_darkmode" align=middle width=32.59323209999999pt height=14.15524440000002pt/>.
+The pinning files is the same, changing `BETADAMP` to `R0`, where `R0`<img src="svgs/3fc6810807d36c390b212098f3e5222d.svg?invert_in_darkmode" align=middle width=40.812441449999994pt height=14.15524440000002pt/>.
 
 The input file `input/input.in' gives a variety of options. I highly recommend just messing around with to get what each one does.
 
