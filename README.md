@@ -2,64 +2,64 @@
 
 This code simulates overdamped particles that follows the Langevin equation:
 
-<p align="center"><img src="svgs/885e61cb3afce16640aae6a0e448d303.svg?invert_in_darkmode" align=middle width=320.49067379999997pt height=39.26959575pt/></p>
+<p align="center"><img src="svgs/b99f817a3683fa5bc589d21e3121fe8f.svg?invert_in_darkmode" align=middle width=320.49067379999997pt height=39.26959575pt/></p>
 
 Where 
-<img src="svgs/5474c8baa2bc6feabb0eac4237772aab.svg?invert_in_darkmode" align=middle width=14.628015599999989pt height=14.611878600000017pt/> 
+<img src="svgs/0374c41447147ca3648ee247708ef2dc.svg?invert_in_darkmode" align=middle width=22.847224949999998pt height=14.611878600000017pt/> 
 is the particle velocity, 
-<img src="svgs/923122acc2287bfda324405831221148.svg?invert_in_darkmode" align=middle width=17.35872434999999pt height=14.15524440000002pt/> 
+<img src="svgs/2c81a6cce979f48f11d65a4ff4c3e36a.svg?invert_in_darkmode" align=middle width=25.5779337pt height=14.15524440000002pt/> 
 is the damping constant, that arises from
 dissipation processes. 
-<img src="svgs/812375f957f3b78a317a4d7150c3ae73.svg?invert_in_darkmode" align=middle width=22.18049624999999pt height=14.15524440000002pt/> 
+<img src="svgs/b76b989c74373553c3c50388d3eebfe0.svg?invert_in_darkmode" align=middle width=30.3997056pt height=14.15524440000002pt/> 
 is the Magnus term, very important for some overdamped particles, such as magnetic skyrmions.
 
 The right side of the equation are forces: 
-<img src="svgs/e95e66507f099399896b77ab8f29283d.svg?invert_in_darkmode" align=middle width=32.17238144999999pt height=27.6567522pt/> 
+<img src="svgs/dc3bdd931bca1c2d6c2fc539a722a541.svg?invert_in_darkmode" align=middle width=40.3915908pt height=27.6567522pt/> 
 is the particle-particle interaction,
-<img src="svgs/782afeb48b808fd9ab3f9c49d375d7f8.svg?invert_in_darkmode" align=middle width=28.810112099999987pt height=31.525041899999984pt/> 
+<img src="svgs/f904f960c240cf947b32f1d0c6c34e24.svg?invert_in_darkmode" align=middle width=37.02932145pt height=31.525041899999984pt/> 
 is the particle-pinning interaction and 
-<img src="svgs/c607da508083ad5701363425633a95f0.svg?invert_in_darkmode" align=middle width=22.12940399999999pt height=27.6567522pt/> 
+<img src="svgs/e5234634c204183fce71ddd095d239a4.svg?invert_in_darkmode" align=middle width=30.348613349999997pt height=27.6567522pt/> 
 is the driven currents force.
 
 For the particle-particle, I modeled the potential as 
-<img src="svgs/e3e70515565a7baf69520fdd8ea67d9e.svg?invert_in_darkmode" align=middle width=127.29773759999999pt height=27.6567522pt/>
+<img src="svgs/e316b940aa43ecae7e77ffbb3042f466.svg?invert_in_darkmode" align=middle width=135.51694695pt height=27.6567522pt/>
 , where 
-<img src="svgs/e9aaf76f0a4e315c1f4a8f8cab730a2d.svg?invert_in_darkmode" align=middle width=20.513758649999993pt height=22.465723500000017pt/> 
+<img src="svgs/24c5603126b66cc1f9a1f7dc68f456b7.svg?invert_in_darkmode" align=middle width=28.732968pt height=22.465723500000017pt/> 
 is the modified bessel of first kind, 
-<img src="svgs/22e03b2e0480e5d934a24177ee642c6e.svg?invert_in_darkmode" align=middle width=17.32824719999999pt height=22.465723500000017pt/> 
+<img src="svgs/c1ad03439063568075616325b8262b1c.svg?invert_in_darkmode" align=middle width=25.54745655pt height=22.465723500000017pt/> 
 is the potential strength of particle 
-<img src="svgs/36b5afebdba34564d884d347484ac0c7.svg?invert_in_darkmode" align=middle width=7.710416999999989pt height=21.68300969999999pt/>
+<img src="svgs/317a2c08d9f6e7dd873fc65fbee394e3.svg?invert_in_darkmode" align=middle width=15.929626349999998pt height=21.68300969999999pt/>
 , and 
-<img src="svgs/92e0822b1528090efc2435d2ae60c9ee.svg?invert_in_darkmode" align=middle width=18.17172884999999pt height=14.15524440000002pt/> 
+<img src="svgs/fcdb70efae8e21c43e174377b6f4c03d.svg?invert_in_darkmode" align=middle width=26.390938199999997pt height=14.15524440000002pt/> 
 is the distance between particles 
-<img src="svgs/77a3b857d53fb44e33b53e4c8b68351a.svg?invert_in_darkmode" align=middle width=5.663225699999989pt height=21.68300969999999pt/> 
+<img src="svgs/14afed0aec1ac4b185b819a4b510bff6.svg?invert_in_darkmode" align=middle width=13.882435049999998pt height=21.68300969999999pt/> 
 and 
-<img src="svgs/36b5afebdba34564d884d347484ac0c7.svg?invert_in_darkmode" align=middle width=7.710416999999989pt height=21.68300969999999pt/> 
+<img src="svgs/317a2c08d9f6e7dd873fc65fbee394e3.svg?invert_in_darkmode" align=middle width=15.929626349999998pt height=21.68300969999999pt/> 
 . From this I get the force 
-<img src="svgs/3ee4eeebf0289c1b1309ab62599acf79.svg?invert_in_darkmode" align=middle width=229.28914799999998pt height=27.6567522pt/> 
+<img src="svgs/baf9d687c9ec72993b3a331d0fe14a9b.svg?invert_in_darkmode" align=middle width=237.50835734999998pt height=27.6567522pt/> 
 where 
-<img src="svgs/6d6968ce16fa7a6d8af6261f0d09b3b9.svg?invert_in_darkmode" align=middle width=20.513758649999993pt height=22.465723500000017pt/> 
+<img src="svgs/ad2051ae86a51ad37b859e099fe609d7.svg?invert_in_darkmode" align=middle width=28.732968pt height=22.465723500000017pt/> 
 is the modified bessel of second kind.
 
 For the particle-pinning I choose a gaussian potential, with the form 
-<img src="svgs/660a9f214c81aaa128108051f54a9868.svg?invert_in_darkmode" align=middle width=150.82864005pt height=57.53473439999999pt/> 
+<img src="svgs/a1241ecbcf9e83be5a93f4f6fe1e093c.svg?invert_in_darkmode" align=middle width=159.0478494pt height=57.53473439999999pt/> 
 where 
-<img src="svgs/92e0822b1528090efc2435d2ae60c9ee.svg?invert_in_darkmode" align=middle width=18.17172884999999pt height=14.15524440000002pt/> 
+<img src="svgs/fcdb70efae8e21c43e174377b6f4c03d.svg?invert_in_darkmode" align=middle width=26.390938199999997pt height=14.15524440000002pt/> 
 is the distance between particle 
-<img src="svgs/77a3b857d53fb44e33b53e4c8b68351a.svg?invert_in_darkmode" align=middle width=5.663225699999989pt height=21.68300969999999pt/> 
+<img src="svgs/14afed0aec1ac4b185b819a4b510bff6.svg?invert_in_darkmode" align=middle width=13.882435049999998pt height=21.68300969999999pt/> 
 and pinning 
-<img src="svgs/36b5afebdba34564d884d347484ac0c7.svg?invert_in_darkmode" align=middle width=7.710416999999989pt height=21.68300969999999pt/>
+<img src="svgs/317a2c08d9f6e7dd873fc65fbee394e3.svg?invert_in_darkmode" align=middle width=15.929626349999998pt height=21.68300969999999pt/>
 , 
-<img src="svgs/1049ded9e1be03670fc3963966339893.svg?invert_in_darkmode" align=middle width=17.77628489999999pt height=22.465723500000017pt/> 
+<img src="svgs/9387b5548255b313ba3bdb0e512b3e1c.svg?invert_in_darkmode" align=middle width=25.995494249999997pt height=22.465723500000017pt/> 
 is the pinning strength and 
-<img src="svgs/007094eee0f16d09ce121fc2ba8e7107.svg?invert_in_darkmode" align=middle width=15.24170009999999pt height=14.15524440000002pt/> 
+<img src="svgs/93453c892be73e29b3db9df48b14587b.svg?invert_in_darkmode" align=middle width=23.46090945pt height=14.15524440000002pt/> 
 is the pinning radius. From the potential I get the force 
-<img src="svgs/9a8051ff565cb120a39e222aa144fe54.svg?invert_in_darkmode" align=middle width=270.53811014999997pt height=57.53473439999999pt/> 
+<img src="svgs/947466ed195e6c4ad76fb2ace1c6fb19.svg?invert_in_darkmode" align=middle width=278.7573195pt height=57.53473439999999pt/> 
 where 
-<img src="svgs/66ea7bb93062b841d8ee79b99856202e.svg?invert_in_darkmode" align=middle width=68.65288649999998pt height=44.70706679999999pt/>.
+<img src="svgs/e7e8964f640e4fbcbe0423b8a1a424cc.svg?invert_in_darkmode" align=middle width=76.87209585pt height=44.70706679999999pt/>.
 
 The last term, is the current force, which can be of any form, in special here I consider the most general form of 
-<img src="svgs/a8181d56bbd2cd2afe6e379912da1149.svg?invert_in_darkmode" align=middle width=131.02886445pt height=27.6567522pt/>
+<img src="svgs/cd53890f1d3199b999128b63de2fc5de.svg?invert_in_darkmode" align=middle width=139.2480738pt height=27.6567522pt/>
 . For more detail see the input file `input/input.in`, where all the options are avaiable.
 
 I used many molecular dynamics technics for optimization, such as subboxes, mirror boxes, lookup tables. However, if you have any further optimization, please send my a [email](mailto:jc.souza@unesp.br)
@@ -84,7 +84,7 @@ Positions:
 ```
 Here, `U0` is the potential strength, higher values means the particles will be more repulsive, and
 lower values less repulsive (if `U0<0` then the particles will be attractive). `BETADAMP` is the parameter from the Magnus force. This is very useful for Skyrmions, for example, if your overdamped particle doesn't have Magnus force, just put `0.0`. The `positions` is the 2D positions for your particles. If you want particles of different species, just put another file with the new species data, and the program will simulate both interacting. One more thing about `BETADAMP`, the normalization 
-<img src="svgs/8b1a0facd26bc55bbe29cb938fb04c46.svg?invert_in_darkmode" align=middle width=91.41108404999999pt height=26.76175259999998pt/> 
+<img src="svgs/d289beee1f3b63d5c3257e928343fb3f.svg?invert_in_darkmode" align=middle width=99.6302934pt height=26.76175259999998pt/> 
 is used for `BETADAMP`, as `BETADAMP`
 <img src="svgs/4381a894c2903e76be2f2e88a42df875.svg?invert_in_darkmode" align=middle width=42.32654084999999pt height=36.3965877pt/>.
 
