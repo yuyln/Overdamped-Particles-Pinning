@@ -15,7 +15,6 @@
 #include <control.h>
 #include <simulator.h>
 #include <GSA.h>
-#include <omp.h>
 
 int main()
 {

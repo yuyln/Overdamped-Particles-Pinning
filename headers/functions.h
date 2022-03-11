@@ -2,7 +2,11 @@
 #define __FUNCS
 #define PARSER_IMPLEMENTATION
 #define PROFILER_IMPLEMENTATION
+#ifndef _MSC_VER
 #include <dirent.h>
+#else
+#include <dirent_.h>
+#endif
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
