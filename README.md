@@ -2,23 +2,65 @@
 
 This code simulates overdamped particles that follows the Langevin equation:
 
-<!-- $$
-\alpha_d \mathbf{v}_i+\alpha_m \hat{\mathbf{z}}\times\mathbf{v}_i=\sum_{i\neq j}\mathbf{F}^{PP}_{ij}+\sum_{j}\mathbf{F}^{Pp}_{ij}+\mathbf{F}^{C}
-$$ --> 
+<p align="center"><img src="svgs/b99f817a3683fa5bc589d21e3121fe8f.svg?invert_in_darkmode" align=middle width=320.49067379999997pt height=39.26959575pt/></p>
 
-<div align="center"><img style="background: white;" src="svg/Ylyd03EvPj.svg"></div>
+Where 
+<img src="svgs/0374c41447147ca3648ee247708ef2dc.svg?invert_in_darkmode" align=middle width=22.847224949999998pt height=14.611878600000017pt/> 
+is the particle velocity, 
+<img src="svgs/2c81a6cce979f48f11d65a4ff4c3e36a.svg?invert_in_darkmode" align=middle width=25.5779337pt height=14.15524440000002pt/> 
+is the damping constant, that arises from
+dissipation processes. 
+<img src="svgs/b76b989c74373553c3c50388d3eebfe0.svg?invert_in_darkmode" align=middle width=30.3997056pt height=14.15524440000002pt/> 
+is the Magnus term, very important for some overdamped particles, such as magnetic skyrmions.
 
-Where <!-- $\mathbf{v}_i$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%5Cmathbf%7Bv%7D_i"> is the particle velocity, <!-- $\alpha_d$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%5Calpha_d"> is the damping constant, that arises from
-dissipation processes. <!-- $\alpha_m$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%5Calpha_m"> is the Magnus term, very important for some overdamped particles, such as magnetic skyrmions.
+The right side of the equation are forces: 
+<img src="svgs/dc3bdd931bca1c2d6c2fc539a722a541.svg?invert_in_darkmode" align=middle width=40.3915908pt height=27.6567522pt/> 
+is the particle-particle interaction,
+<img src="svgs/f904f960c240cf947b32f1d0c6c34e24.svg?invert_in_darkmode" align=middle width=37.02932145pt height=31.525041899999984pt/> 
+is the particle-pinning interaction and 
+<img src="svgs/e5234634c204183fce71ddd095d239a4.svg?invert_in_darkmode" align=middle width=30.348613349999997pt height=27.6567522pt/> 
+is the driven currents force.
 
-The right side of the equation are forces: <!-- $\mathbf{F}^{PP}_{ij}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%5Cmathbf%7BF%7D%5E%7BPP%7D_%7Bij%7D"> is the particle-particle interaction,
-<!-- $\mathbf{F}^{Pp}_{ij}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%5Cmathbf%7BF%7D%5E%7BPp%7D_%7Bij%7D"> is the particle-pinning interaction and <!-- $\mathbf{F}^{C}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%5Cmathbf%7BF%7D%5E%7BC%7D"> is the driven currents force.
+For the particle-particle, I modeled the potential as 
+<img src="svgs/e316b940aa43ecae7e77ffbb3042f466.svg?invert_in_darkmode" align=middle width=135.51694695pt height=27.6567522pt/>
+, where 
+<img src="svgs/24c5603126b66cc1f9a1f7dc68f456b7.svg?invert_in_darkmode" align=middle width=28.732968pt height=22.465723500000017pt/> 
+is the modified bessel of first kind, 
+<img src="svgs/c1ad03439063568075616325b8262b1c.svg?invert_in_darkmode" align=middle width=25.54745655pt height=22.465723500000017pt/> 
+is the potential strength of particle 
+<img src="svgs/317a2c08d9f6e7dd873fc65fbee394e3.svg?invert_in_darkmode" align=middle width=15.929626349999998pt height=21.68300969999999pt/>
+, and 
+<img src="svgs/fcdb70efae8e21c43e174377b6f4c03d.svg?invert_in_darkmode" align=middle width=26.390938199999997pt height=14.15524440000002pt/> 
+is the distance between particles 
+<img src="svgs/14afed0aec1ac4b185b819a4b510bff6.svg?invert_in_darkmode" align=middle width=13.882435049999998pt height=21.68300969999999pt/> 
+and 
+<img src="svgs/317a2c08d9f6e7dd873fc65fbee394e3.svg?invert_in_darkmode" align=middle width=15.929626349999998pt height=21.68300969999999pt/> 
+. From this I get the force 
+<img src="svgs/baf9d687c9ec72993b3a331d0fe14a9b.svg?invert_in_darkmode" align=middle width=237.50835734999998pt height=27.6567522pt/> 
+where 
+<img src="svgs/ad2051ae86a51ad37b859e099fe609d7.svg?invert_in_darkmode" align=middle width=28.732968pt height=22.465723500000017pt/> 
+is the modified bessel of second kind.
 
-For the particle-particle, I modeled the potential as <!-- $U^{PP}_{ij}=U_jK_0(r_{ij})$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=U%5E%7BPP%7D_%7Bij%7D%3DU_jK_0(r_%7Bij%7D)">, where <!-- $K_0$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=K_0"> is the modified bessel of first kind, <!-- $U_j$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=U_j"> is the potential strength of particle <!-- $j$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=j">, and <!-- $r_{ij}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=r_%7Bij%7D"> is the distance between particles <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=i"> and <!-- $j$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=j">. From this I get the force <!-- $\mathbf{F}^{PP}_{ij}=-\boldsymbol{\nabla}U^{PP}_{ij}=U_jK_1(r_{ij})\hat{\mathbf{r}}_{ij}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%5Cmathbf%7BF%7D%5E%7BPP%7D_%7Bij%7D%3D-%5Cboldsymbol%7B%5Cnabla%7DU%5E%7BPP%7D_%7Bij%7D%3DU_jK_1(r_%7Bij%7D)%5Chat%7B%5Cmathbf%7Br%7D%7D_%7Bij%7D"> where <!-- $K_1$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=K_1"> is the modified bessel of second kind.
+For the particle-pinning I choose a gaussian potential, with the form 
+<img src="svgs/a1241ecbcf9e83be5a93f4f6fe1e093c.svg?invert_in_darkmode" align=middle width=159.0478494pt height=57.53473439999999pt/> 
+where 
+<img src="svgs/fcdb70efae8e21c43e174377b6f4c03d.svg?invert_in_darkmode" align=middle width=26.390938199999997pt height=14.15524440000002pt/> 
+is the distance between particle 
+<img src="svgs/14afed0aec1ac4b185b819a4b510bff6.svg?invert_in_darkmode" align=middle width=13.882435049999998pt height=21.68300969999999pt/> 
+and pinning 
+<img src="svgs/317a2c08d9f6e7dd873fc65fbee394e3.svg?invert_in_darkmode" align=middle width=15.929626349999998pt height=21.68300969999999pt/>
+, 
+<img src="svgs/9387b5548255b313ba3bdb0e512b3e1c.svg?invert_in_darkmode" align=middle width=25.995494249999997pt height=22.465723500000017pt/> 
+is the pinning strength and 
+<img src="svgs/93453c892be73e29b3db9df48b14587b.svg?invert_in_darkmode" align=middle width=23.46090945pt height=14.15524440000002pt/> 
+is the pinning radius. From the potential I get the force 
+<img src="svgs/947466ed195e6c4ad76fb2ace1c6fb19.svg?invert_in_darkmode" align=middle width=278.7573195pt height=57.53473439999999pt/> 
+where 
+<img src="svgs/e7e8964f640e4fbcbe0423b8a1a424cc.svg?invert_in_darkmode" align=middle width=76.87209585pt height=44.70706679999999pt/>.
 
-For the particle-pinning I choose a gaussian potential, with the form <!-- $U^{Pp}_{ij}=U_0\exp\left(\dfrac{r_{ij}^2}{a_0^2}\right)$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=U%5E%7BPp%7D_%7Bij%7D%3DU_0%5Cexp%5Cleft(%5Cdfrac%7Br_%7Bij%7D%5E2%7D%7Ba_0%5E2%7D%5Cright)"> where <!-- $r_{ij}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=r_%7Bij%7D"> is the distance between particle <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=i"> and pinning <!-- $j$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=j">, <!-- $U_0$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=U_0"> is the pinning strength and <!-- $a_0$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=a_0"> is the pinning radius. From the potential I get the force <!-- $\mathbf{F}^{Pp}_{ij}=-\boldsymbol{\nabla}U^{Pp}_{ij}=F_0r_{ij}\exp\left(\dfrac{r_{ij}^2}{a_0^2}\right)\hat{\mathbf{r}}_{ij}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%5Cmathbf%7BF%7D%5E%7BPp%7D_%7Bij%7D%3D-%5Cboldsymbol%7B%5Cnabla%7DU%5E%7BPp%7D_%7Bij%7D%3DF_0r_%7Bij%7D%5Cexp%5Cleft(%5Cdfrac%7Br_%7Bij%7D%5E2%7D%7Ba_0%5E2%7D%5Cright)%5Chat%7B%5Cmathbf%7Br%7D%7D_%7Bij%7D"> where <!-- $F_0=\dfrac{2U_0}{a_0^2}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=F_0%3D%5Cdfrac%7B2U_0%7D%7Ba_0%5E2%7D">.
-
-The last term, is the current force, which can be of any form, in special here I consider the most general form of <!-- $\mathbf{F}^{C}=\mathbf{F}^{DC}+\mathbf{F}^{AC}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%5Cmathbf%7BF%7D%5E%7BC%7D%3D%5Cmathbf%7BF%7D%5E%7BDC%7D%2B%5Cmathbf%7BF%7D%5E%7BAC%7D">. For more detail see the input file `input/input.in`, where all the options are avaiable.
+The last term, is the current force, which can be of any form, in special here I consider the most general form of 
+<img src="svgs/cd53890f1d3199b999128b63de2fc5de.svg?invert_in_darkmode" align=middle width=139.2480738pt height=27.6567522pt/>
+. For more detail see the input file `input/input.in`, where all the options are avaiable.
 
 I used many molecular dynamics technics for optimization, such as subboxes, mirror boxes, lookup tables. However, if you have any further optimization, please send my a [email](mailto:jc.souza@unesp.br)
 
@@ -41,17 +83,20 @@ Positions:
 .                   .
 ```
 Here, `U0` is the potential strength, higher values means the particles will be more repulsive, and
-lower values less repulsive (if `U0<0` then the particles will be attractive). `BETADAMP` is the parameter from the Magnus force. This is very useful for Skyrmions, for example, if your overdamped particle doesn't have Magnus force, just put `0.0`. The `positions` is the 2D positions for your particles. If you want particles of different species, just put another file with the new species data, and the program will simulate both interacting. One more thing about `BETADAMP`, the normalization <!-- $\alpha_m^2+\alpha_d^2=1$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%5Calpha_m%5E2%2B%5Calpha_d%5E2%3D1"> is used for `BETADAMP`, as `BETADAMP`<!-- $=\dfrac{\alpha_m}{\alpha_d}$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%3D%5Cdfrac%7B%5Calpha_m%7D%7B%5Calpha_d%7D">.
+lower values less repulsive (if `U0<0` then the particles will be attractive). `BETADAMP` is the parameter from the Magnus force. This is very useful for Skyrmions, for example, if your overdamped particle doesn't have Magnus force, just put `0.0`. The `positions` is the 2D positions for your particles. If you want particles of different species, just put another file with the new species data, and the program will simulate both interacting. One more thing about `BETADAMP`, the normalization 
+<img src="svgs/d289beee1f3b63d5c3257e928343fb3f.svg?invert_in_darkmode" align=middle width=99.6302934pt height=26.76175259999998pt/> 
+is used for `BETADAMP`, as `BETADAMP`
+<img src="svgs/4381a894c2903e76be2f2e88a42df875.svg?invert_in_darkmode" align=middle width=42.32654084999999pt height=36.3965877pt/>.
 
-The pinning files is the same, changing `BETADAMP` to `R0`, where `R0`<!-- $=a_0$ --> <img style="transform: translateY(0.1em); background: white;" src="https://render.githubusercontent.com/render/math?math=%3Da_0">.
+The pinning files is the same, changing `BETADAMP` to `R0`, where `R0`<img src="svgs/17d8b0c8defe55d3706e7b9fdf06aab0.svg?invert_in_darkmode" align=middle width=32.59323209999999pt height=14.15524440000002pt/>.
 
 The input file `input/input.in' gives a variety of options. I highly recommend just messing around with to get what each one does.
 
 A output folder is created `out` and inside you will find the average velocity file, and a folder that separetes the average velocity by `BETADAMP` value. You will also find a `positions` folder, that will have the positions files for the particles, the files will be present if and only if `WRITE` on the input file is set to `1`. There will be a `simulator_data.out` file inside, that has informations about the simulation. 
 
-The velocity file has the current value, the velocity in the $x$ direction and the velocity in the $y$ direction, in this order.
+The velocity file has the current value, the velocity in the <img src="svgs/332cc365a4987aacce0ead01b8bdcc0b.svg?invert_in_darkmode" align=middle width=9.39498779999999pt height=14.15524440000002pt/> direction and the velocity in the <img src="svgs/deceeaf6940a8c7a5a02373728002b0f.svg?invert_in_darkmode" align=middle width=8.649225749999989pt height=14.15524440000002pt/> direction, in this order.
 
-One more important thing, the program saves snapshots of the configuration for each current step. This is very useful for cases where the computer shutdown, for example, where I run these simulation there is a serious problem with energy, and this helps a lot to not lose everything that already ran. This can also be used for save space, suppose this: you alread ran an simulation, and has the velocity-force curves, but want some trajectories, how would you do it, if you didn´t save the positions? You could rerun everything, but for many systems this could take a lot of time. With this, you can ran everything, and when you need a trajectory, just set the program to `RECOVERY` (putting a `1` on input file) and run it, with this you will get the desired trajectory. With this you save time and space, just remember to set `WRITE` to `1` too, otherwise it will not write the positions files. By the way, the positions files are very heavy, so there is a `Ncut` on input file, which cuts the positions file by that number. I often use `Ncut: 50`, as the positions file will take only $2\%$ of the original, and the positions will still be very clear and smooth. For animations I recommend using something like `5`, `10`, `20`, it deppends on you.
+One more important thing, the program saves snapshots of the configuration for each current step. This is very useful for cases where the computer shutdown, for example, where I run these simulation there is a serious problem with energy, and this helps a lot to not lose everything that already ran. This can also be used for save space, suppose this: you alread ran an simulation, and has the velocity-force curves, but want some trajectories, how would you do it, if you didn´t save the positions? You could rerun everything, but for many systems this could take a lot of time. With this, you can ran everything, and when you need a trajectory, just set the program to `RECOVERY` (putting a `1` on input file) and run it, with this you will get the desired trajectory. With this you save time and space, just remember to set `WRITE` to `1` too, otherwise it will not write the positions files. By the way, the positions files are very heavy, so there is a `Ncut` on input file, which cuts the positions file by that number. I often use `Ncut: 50`, as the positions file will take only <img src="svgs/45a0b00b513fa74f40b37aafadb94773.svg?invert_in_darkmode" align=middle width=21.91788224999999pt height=24.65753399999998pt/> of the original, and the positions will still be very clear and smooth. For animations I recommend using something like `5`, `10`, `20`, it deppends on you.
 
 The integration method can be the Runge-Kutta 4 order, Runge-Kutta 2 order and Euler integration, which one must be defined at compilation time, with `DRK4`, `DRK2` and `DEULER` for the respective method.
 
