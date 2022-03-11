@@ -15,6 +15,7 @@
 #include <control.h>
 #include <simulator.h>
 #include <GSA.h>
+#include <omp.h>
 
 int main()
 {
@@ -23,6 +24,9 @@ int main()
     //TODO: save/load system           (V)
     //      output simulator object    (V)
     //      GSA                        (V?) 
+    //      Fix Bug no pinning         (V)
+    //      Multithread GSA            (X)
+    //      Multithread Integration    (x)
 
     GSAParams gsap;
     gsap.innerLoop = 100000;

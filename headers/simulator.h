@@ -113,6 +113,10 @@ typedef struct Simulator
                 R0Max = pins[i].R0;
             }
         }
+        if (nPinnings == 0)
+        {
+            R0Max = 1.0;
+        }
         FC = 0.0;
         PinningBoxes = CreateBoxes(R0Max * sqrt(ExpTable.getMaxRange()), nPinnings, Lx, Ly, pins);
         ParticleBoxes = CreateBoxes(BK1Table.getMaxRange(), nParticles, Lx, Ly, parts);
