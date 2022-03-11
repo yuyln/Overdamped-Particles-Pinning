@@ -26,7 +26,7 @@ int main()
     //      GSA                        (V?) 
     //      Fix Bug no pinning         (V)
     //      Multithread GSA            (X)
-    //      Multithread Integration    (x)
+    //      Multithread Integration    (X)
 
     GSAParams gsap;
     gsap.innerLoop = 100000;
