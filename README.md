@@ -54,7 +54,7 @@ and pinning
 is the pinning strength and 
 <img src="svgs/93453c892be73e29b3db9df48b14587b.svg?invert_in_darkmode" align=middle width=23.46090945pt height=14.15524440000002pt/> 
 is the pinning radius. From the potential I get the force 
-<img src="svgs/947466ed195e6c4ad76fb2ace1c6fb19.svg?invert_in_darkmode" align=middle width=278.7573195pt height=57.53473439999999pt/> 
+<img src="svgs/0a073d9ec3c550657d63f5f82f1f062a.svg?invert_in_darkmode" align=middle width=278.7573195pt height=57.53473439999999pt/> 
 where 
 <img src="svgs/e7e8964f640e4fbcbe0423b8a1a424cc.svg?invert_in_darkmode" align=middle width=76.87209585pt height=44.70706679999999pt/>.
 
@@ -86,7 +86,7 @@ Here, `U0` is the potential strength, higher values means the particles will be 
 lower values less repulsive (if `U0<0` then the particles will be attractive). `BETADAMP` is the parameter from the Magnus force. This is very useful for Skyrmions, for example, if your overdamped particle doesn't have Magnus force, just put `0.0`. The `positions` is the 2D positions for your particles. If you want particles of different species, just put another file with the new species data, and the program will simulate both interacting. One more thing about `BETADAMP`, the normalization 
 <img src="svgs/d289beee1f3b63d5c3257e928343fb3f.svg?invert_in_darkmode" align=middle width=99.6302934pt height=26.76175259999998pt/> 
 is used for `BETADAMP`, as `BETADAMP`
-<img src="svgs/4381a894c2903e76be2f2e88a42df875.svg?invert_in_darkmode" align=middle width=42.32654084999999pt height=36.3965877pt/>.
+<img src="svgs/c6412ef4a1bf3c4ea666b2bee45af636.svg?invert_in_darkmode" align=middle width=50.54575019999999pt height=36.3965877pt/>.
 
 The pinning files is the same, changing `BETADAMP` to `R0`, where `R0`<img src="svgs/17d8b0c8defe55d3706e7b9fdf06aab0.svg?invert_in_darkmode" align=middle width=32.59323209999999pt height=14.15524440000002pt/>.
 
