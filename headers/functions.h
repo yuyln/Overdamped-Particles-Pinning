@@ -115,7 +115,17 @@ int InitPinnings(Pinning **p)
     for (int i = 0; i < nfiles; i++)
     {
         int ip = GetIndexOfTag("Positions", parsed[i], qnt[i]);
-        for (int j = ip + 1; j < qnt[i]; j += 2)
+
+        int start = 0;
+        if (strlen(parsed[i][ip + 1]) == 1)
+        {
+            start = ip + 2;
+        }
+        else
+        {
+            start = ip + 1;
+        }
+        for (int j = start; j < qnt[i]; j += 2)
         {
             nPi++;
         }
@@ -127,8 +137,19 @@ int InitPinnings(Pinning **p)
     {
         double U0 = GetValueDouble("U0", parsed[i], qnt[i]);
         double R0 = GetValueDouble("R0", parsed[i], qnt[i]);
+
         int ip = GetIndexOfTag("Positions", parsed[i], qnt[i]);
-        for (int j = ip; j < qnt[i]; j += 2)
+        int start = 0;
+        if (strlen(parsed[i][ip + 1]) == 1)
+        {
+            start = ip + 2;
+        }
+        else
+        {
+            start = ip + 1;
+        }
+        
+        for (int j = start; j < qnt[i]; j += 2)
         {
             double x = strtod(parsed[i][j], NULL);
             double y = strtod(parsed[i][j + 1], NULL);
@@ -150,7 +171,16 @@ int InitParticles(Particle **p)
     for (int i = 0; i < nfiles; i++)
     {
         int ip = GetIndexOfTag("Positions", parsed[i], qnt[i]);
-        for (int j = ip + 1; j < qnt[i]; j += 2)
+        int start = 0;
+        if (strlen(parsed[i][ip + 1]) == 1)
+        {
+            start = ip + 2;
+        }
+        else
+        {
+            start = ip + 1;
+        }
+        for (int j = start; j < qnt[i]; j += 2)
         {
             nP++;
         }
@@ -163,7 +193,16 @@ int InitParticles(Particle **p)
         double U0 = GetValueDouble("U0", parsed[i], qnt[i]);
         double betadamp = GetValueDouble("BETADAMP", parsed[i], qnt[i]);
         int ip = GetIndexOfTag("Positions", parsed[i], qnt[i]);
-        for (int j = ip + 1; j < qnt[i]; j += 2)
+        int start = 0;
+        if (strlen(parsed[i][ip + 1]) == 1)
+        {
+            start = ip + 2;
+        }
+        else
+        {
+            start = ip + 1;
+        }
+        for (int j = start; j < qnt[i]; j += 2)
         {
             double x = strtod(parsed[i][j], NULL);
             double y = strtod(parsed[i][j + 1], NULL);
