@@ -24,9 +24,11 @@ int main()
     //      output simulator object    (V)
     //      GSA                        (V?) 
     //      Fix Bug no pinning         (V)
+    //      Fix weird bug              (X)
     //      Multithread GSA            (X)
     //      Multithread Integration    (X)
     //      Test generalized forces/potential (V)  <- <- Compare to paper
+    //      Check every snprintf, i think i forgot a +1 on every call         (X)
 
     // GSAParams gsap;
     // gsap.innerLoop = 100000;

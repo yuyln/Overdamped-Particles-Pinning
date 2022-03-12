@@ -73,7 +73,7 @@ char **FindFilesInsideDir(const char *dir_, int *nf_)
             if (r1 != 0 && r2 != 0)
             {
                 int n = snprintf(NULL, 0, "%s/%s", dir_, dir->d_name);
-                files[i] = new char[n];
+                files[i] = new char[n + 1];
                 snprintf(files[i], n + 1, "%s/%s", dir_, dir->d_name);
                 i++;
             }

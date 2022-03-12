@@ -66,7 +66,7 @@ typedef struct Simulator
             betaQnt[parts[i].betadamp]++;
         }
 
-        FILE *f = fopen64("./input/input.in", "rb");
+        FILE *f = fopen("./input/input.in", "rb");
         char *data = ReadFile(f);
         fclose(f);
         int nData;
