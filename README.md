@@ -64,7 +64,7 @@ The third term, is the current force, which can be of any form, in special here 
 
 The last term is the temperature effect, it is modeled using random kicks in the particle position, and we use a distribuition such that <img src="svgs/41d1475bd1f4d4c7c638e2034f307782.svg?invert_in_darkmode" align=middle width=77.3644806pt height=27.94539330000001pt/>.
 
-I used many molecular dynamics technics for optimization, such as subboxes, mirror boxes, lookup tables. However, if you have any further optimization, please send my a [email](mailto:jc.souza@unesp.br)
+I used many molecular dynamics technics for optimization, such as subboxes, mirror boxes, lookup tables. However, if you have any further optimization, please send me a [email](mailto:jc.souza@unesp.br)
 
 Any overdamped particle can be simulated using this code, with minor or no, changes.
 
@@ -109,6 +109,8 @@ For compilation use
 g++ -std=c++11 -O3 -I ./FileParser -I ./Profiler -I ./headers -Dmethod -o program main.cpp
 ```
 
+Other potential forms can be used as well, just by making the correct adjusts to `Pinning` class.
+
 TODO:
 - [X] Save/Load system, for backup and use less space.
 - [X] Output simulation data.
@@ -119,3 +121,4 @@ TODO:
 - [ ] Make a system to run many GSA with different parameters for find the absolute ground state.
 - [ ] Add references to `README.md`.
 - [ ] Add some figures of velocity-force curves, and trajectories.
+- [ ] GPU using OpenCL.
