@@ -128,7 +128,7 @@ int InitPinnings(Pinning **p)
         double U0 = GetValueDouble("U0", parsed[i], qnt[i]);
         double R0 = GetValueDouble("R0", parsed[i], qnt[i]);
         int ip = GetIndexOfTag("Positions", parsed[i], qnt[i]);
-        for (int j = ip + 1; j < qnt[i]; j += 2)
+        for (int j = ip; j < qnt[i]; j += 2)
         {
             double x = strtod(parsed[i][j], NULL);
             double y = strtod(parsed[i][j + 1], NULL);

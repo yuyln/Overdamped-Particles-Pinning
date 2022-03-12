@@ -26,24 +26,24 @@ int main()
     //      Fix Bug no pinning         (V)
     //      Multithread GSA            (X)
     //      Multithread Integration    (X)
-    //      Test generalized forces/potential (X)
+    //      Test generalized forces/potential (V)  <- <- Compare to paper
 
-    GSAParams gsap;
-    gsap.innerLoop = 100000;
-    gsap.outerLoop = 5;
-    gsap.printParam = gsap.innerLoop / 5;
-    gsap.qA = 2.8;
-    gsap.qT = 2.2;
-    gsap.qV = 2.6;
+    // GSAParams gsap;
+    // gsap.innerLoop = 100000;
+    // gsap.outerLoop = 5;
+    // gsap.printParam = gsap.innerLoop / 5;
+    // gsap.qA = 2.8;
+    // gsap.qT = 2.2;
+    // gsap.qV = 2.6;
 
-    gsap.T0 = 10.0;
-    GSA(gsap, s);
+    // gsap.T0 = 10.0;
+    // GSA(gsap, s);
 
-    gsap.T0 = 5.0;
-    GSA(gsap, s);
+    // gsap.T0 = 5.0;
+    // GSA(gsap, s);
 
-    gsap.T0 = 1.0;
-    GSA(gsap, s);
+    // gsap.T0 = 1.0;
+    // GSA(gsap, s);
 
     if (s.Recovery)
     {
