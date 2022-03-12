@@ -42,7 +42,7 @@ where
 is the modified bessel of second kind.
 
 For the particle-pinning I choose a gaussian potential, with the form 
-<img src="svgs/a1241ecbcf9e83be5a93f4f6fe1e093c.svg?invert_in_darkmode" align=middle width=159.0478494pt height=57.53473439999999pt/> 
+<img src="svgs/9cbf620c7582b40367ca1c4cd44d1378.svg?invert_in_darkmode" align=middle width=171.8332836pt height=57.53473439999999pt/> 
 where 
 <img src="svgs/fcdb70efae8e21c43e174377b6f4c03d.svg?invert_in_darkmode" align=middle width=26.390938199999997pt height=14.15524440000002pt/> 
 is the distance between particle 
@@ -54,7 +54,7 @@ and pinning
 is the pinning strength and 
 <img src="svgs/93453c892be73e29b3db9df48b14587b.svg?invert_in_darkmode" align=middle width=23.46090945pt height=14.15524440000002pt/> 
 is the pinning radius. From the potential I get the force 
-<img src="svgs/0a073d9ec3c550657d63f5f82f1f062a.svg?invert_in_darkmode" align=middle width=278.7573195pt height=57.53473439999999pt/> 
+<img src="svgs/ce2257caadd72882f246be515eaa35ab.svg?invert_in_darkmode" align=middle width=291.5427471pt height=57.53473439999999pt/> 
 where 
 <img src="svgs/e7e8964f640e4fbcbe0423b8a1a424cc.svg?invert_in_darkmode" align=middle width=76.87209585pt height=44.70706679999999pt/>.
 
@@ -62,7 +62,7 @@ The last term, is the current force, which can be of any form, in special here I
 <img src="svgs/cd53890f1d3199b999128b63de2fc5de.svg?invert_in_darkmode" align=middle width=139.2480738pt height=27.6567522pt/>
 . For more detail see the input file `input/input.in`, where all the options are avaiable.
 
-I used many molecular dynamics technics for optimization, such as subboxes, mirror boxes, lookup tables. However, if you have any further optimization, please send me a [email](mailto:jc.souza@unesp.br)
+I used many molecular dynamics technics for optimization, such as subboxes, mirror boxes, lookup tables. However, if you have any further optimization, please send my a [email](mailto:jc.souza@unesp.br)
 
 Any overdamped particle can be simulated using this code, with minor or no, changes.
 
@@ -98,7 +98,7 @@ The velocity file has the current value, the velocity in the <img src="svgs/332c
 
 One more important thing, the program saves snapshots of the configuration for each current step. This is very useful for cases where the computer shutdown, for example, where I run these simulation there is a serious problem with energy, and this helps a lot to not lose everything that already ran. This can also be used for save space, suppose this: you alread ran an simulation, and has the velocity-force curves, but want some trajectories, how would you do it, if you didn´t save the positions? You could rerun everything, but for many systems this could take a lot of time. With this, you can ran everything, and when you need a trajectory, just set the program to `RECOVERY` (putting a `1` on input file) and run it, with this you will get the desired trajectory. With this you save time and space, just remember to set `WRITE` to `1` too, otherwise it will not write the positions files. By the way, the positions files are very heavy, so there is a `Ncut` on input file, which cuts the positions file by that number. I often use `Ncut: 50`, as the positions file will take only <img src="svgs/45a0b00b513fa74f40b37aafadb94773.svg?invert_in_darkmode" align=middle width=21.91788224999999pt height=24.65753399999998pt/> of the original, and the positions will still be very clear and smooth. For animations I recommend using something like `5`, `10`, `20`, it deppends on you.
 
-The integration method can be the Runge-Kutta 4 order, Runge-Kutta 2 order and Euler integration, which one must be defined at compilation time, with `-DRK4`, `-DRK2` and `-DEULER` for the respective method.
+The integration method can be the Runge-Kutta 4 order, Runge-Kutta 2 order and Euler integration, which one must be defined at compilation time, with `DRK4`, `DRK2` and `DEULER` for the respective method.
 
 For compilation use
 ```
