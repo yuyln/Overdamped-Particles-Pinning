@@ -11,8 +11,14 @@
 
 typedef struct Simulator
 {
-    Table ExpTable, BK0Table, BK1Table;
-    Matrix<Box> PinningBoxes, ParticleBoxes, ParticlePotentialBoxes;
+    // Table ExpTable, BK0Table, BK1Table;
+    // Matrix<Box> PinningBoxes, ParticleBoxes, ParticlePotentialBoxes;
+
+    Table PinPotentialTable, PinForceTable,
+          PartPotentialTable, PartForceTable;
+
+    Matrix<Box> PinPotentialBoxes, PinForceBoxes,
+                PartPotentialBoxes, PartForceBoxes;
     Pinning *pins;
     Particle *parts;
     Particle *parts1;
@@ -98,11 +104,20 @@ typedef struct Simulator
         omegaX = tmax / GetValueDouble("NACX", d, nData);
         omegaY = tmax / GetValueDouble("NACY", d, nData);
 
-        ExpTable = Table(1000000, 0.21e-4, 0.0, [](double x)
+        // ExpTable = Table(1000000, 0.21e-4, 0.0, [](double x)
+        //                  { return exp(-x); });
+        // BK0Table = Table(1000000, 0.21e-4, 0.0, [](double x)
+        //                  { return BESSK0(x); });
+        // BK1Table = Table(1000000, 0.21e-4, 1.0, [](double x)
+        //                  { return BESSK1(x) / x; });
+
+        PinPotentialTable = Table(1000000, 0.21e-3, 0.0, [](double x)
                          { return exp(-x); });
-        BK0Table = Table(1000000, 0.21e-4, 0.0, [](double x)
+        PinForceTable = Table(1000000, 0.21e-3, 0.0, [](double x)
+                         { return exp(-x); });
+        PartPotentialTable = Table(1000000, 0.21e-3, 0.0, [](double x)
                          { return BESSK0(x); });
-        BK1Table = Table(1000000, 0.21e-4, 1.0, [](double x)
+        PartForceTable = Table(1000000, 0.21e-3, 1.0, [](double x)
                          { return BESSK1(x) / x; });
 
         double R0Max = 0.0;
@@ -118,10 +133,18 @@ typedef struct Simulator
             R0Max = 1.0;
         }
         FC = 0.0;
-        PinningBoxes = CreateBoxes(R0Max * sqrt(ExpTable.getMaxRange()), nPinnings, Lx, Ly, pins);
-        ParticleBoxes = CreateBoxes(BK1Table.getMaxRange(), nParticles, Lx, Ly, parts);
-        ParticlePotentialBoxes = CreateBoxes(BK0Table.getMaxRange(), nParticles, Lx, Ly, parts);
-        AttBoxes(nPinnings, pins, &PinningBoxes);
+        // PinningBoxes = CreateBoxes(R0Max * sqrt(ExpTable.getMaxRange()), nPinnings, Lx, Ly, pins);
+        // ParticleBoxes = CreateBoxes(BK1Table.getMaxRange(), nParticles, Lx, Ly, parts);
+        // ParticlePotentialBoxes = CreateBoxes(BK0Table.getMaxRange(), nParticles, Lx, Ly, parts);
+        // AttBoxes(nPinnings, pins, &PinningBoxes);
+
+        PinPotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange()), nPinnings, Lx, Ly, pins);
+        PinForceBoxes = CreateBoxes(R0Max * sqrt(PinForceTable.getMaxRange()), nPinnings, Lx, Ly, pins);
+        PartPotentialBoxes = CreateBoxes(PartPotentialTable.getMaxRange(), nParticles, Lx, Ly, parts);
+        PartForceBoxes = CreateBoxes(PartForceTable.getMaxRange(), nParticles, Lx, Ly, parts);
+
+        AttBoxes(nPinnings, pins, &PinPotentialBoxes);
+        AttBoxes(nPinnings, pins, &PinForceBoxes);
 
         if (CreateFoldersEtc)
         {
@@ -253,7 +276,8 @@ typedef struct Simulator
             ++i_;
         }
         delete[] d;
-        AttBoxes(nParticles, parts, &ParticleBoxes);
+        AttBoxes(nParticles, parts, &PartPotentialBoxes);
+        AttBoxes(nParticles, parts, &PartForceBoxes);
     }
 
     void Export(const char *name)
@@ -285,21 +309,30 @@ typedef struct Simulator
         fprintf(f, "Recovery Mode: %d\n", Recovery);
         fprintf(f, "Write Positions: %d\n", Write);
         fprintf(f, "Cut Factor for Writing: %zu\n", NCut);
-        fprintf(f, "EXP Cutoff: %.6f\n", ExpTable.getMaxRange());
-        fprintf(f, "BK0 Cutoff: %.6f\n", BK0Table.getMaxRange());
-        fprintf(f, "BK1 Cutoff: %.6f\n", BK1Table.getMaxRange());
-        fprintf(f, "Size of Boxes in X for Pinning: %.6f\n", PinningBoxes(0, 0).GetLx());
-        fprintf(f, "Size of Boxes in Y for Pinning: %.6f\n", PinningBoxes(0, 0).GetLy());
-        fprintf(f, "Number of Boxes in X for Pinning: %zu\n", PinningBoxes.nCols);
-        fprintf(f, "Number of Boxes in Y for Pinning: %zu\n", PinningBoxes.nRows);
-        fprintf(f, "Size of Boxes in X for Particle: %.6f\n", ParticleBoxes(0, 0).GetLx());
-        fprintf(f, "Size of Boxes in Y for Particle: %.6f\n", ParticleBoxes(0, 0).GetLy());
-        fprintf(f, "Number of Boxes in X for Particle: %zu\n", ParticleBoxes.nCols);
-        fprintf(f, "Number of Boxes in Y for Particle: %zu\n", ParticleBoxes.nRows);
-        fprintf(f, "Size of Boxes in X for Particle Potential: %.6f\n", ParticlePotentialBoxes(0, 0).GetLx());
-        fprintf(f, "Size of Boxes in Y for Particle Potential: %.6f\n", ParticlePotentialBoxes(0, 0).GetLy());
-        fprintf(f, "Number of Boxes in X for Particle Potential: %zu\n", ParticlePotentialBoxes.nCols);
-        fprintf(f, "Number of Boxes in Y for Particle Potential: %zu\n", ParticlePotentialBoxes.nRows);
+        fprintf(f, "---------------------------\n");
+        fprintf(f, "Pinning Boxes:\n");
+        fprintf(f, "Potential Cutoff: %.6f\n", PinPotentialTable.getMaxRange());
+        fprintf(f, "Force Cutoff: %.6f\n", PinForceTable.getMaxRange());
+        fprintf(f, "Size of Boxes in X for Pinning Potential: %.6f\n", PinPotentialBoxes(0, 0).GetLx());
+        fprintf(f, "Size of Boxes in Y for Pinning Potential: %.6f\n", PinPotentialBoxes(0, 0).GetLy());
+        fprintf(f, "Size of Boxes in X for Pinning Force: %.6f\n", PinForceBoxes(0, 0).GetLx());
+        fprintf(f, "Size of Boxes in Y for Pinning Force: %.6f\n", PinForceBoxes(0, 0).GetLy());
+        fprintf(f, "Number of Boxes in X for Pinning Potential: %zu\n", PinPotentialBoxes.nCols);
+        fprintf(f, "Number of Boxes in Y for Pinning Potential: %zu\n", PinPotentialBoxes.nRows);
+        fprintf(f, "Number of Boxes in X for Pinning Force: %zu\n", PinForceBoxes.nCols);
+        fprintf(f, "Number of Boxes in Y for Pinning Force: %zu\n", PinForceBoxes.nRows);
+        fprintf(f, "---------------------------\n");
+        fprintf(f, "Particle Boxes:\n");
+        fprintf(f, "Potential Cutoff: %.6f\n", PartPotentialTable.getMaxRange());
+        fprintf(f, "Force Cutoff: %.6f\n", PartForceTable.getMaxRange());
+        fprintf(f, "Size of Boxes in X for Particle Potential: %.6f\n", PartPotentialBoxes(0, 0).GetLx());
+        fprintf(f, "Size of Boxes in Y for Particle Potential: %.6f\n", PartPotentialBoxes(0, 0).GetLy());
+        fprintf(f, "Size of Boxes in X for Particle Force: %.6f\n", PartForceBoxes(0, 0).GetLx());
+        fprintf(f, "Size of Boxes in Y for Particle Force: %.6f\n", PartForceBoxes(0, 0).GetLy());
+        fprintf(f, "Number of Boxes in X for Particle Potential: %zu\n", PartPotentialBoxes.nCols);
+        fprintf(f, "Number of Boxes in Y for Particle Potential: %zu\n", PartPotentialBoxes.nRows);
+        fprintf(f, "Number of Boxes in X for Particle Force: %zu\n", PartForceBoxes.nCols);
+        fprintf(f, "Number of Boxes in Y for Particle Force: %zu\n", PartForceBoxes.nRows);
 #if defined(RK4)
         fprintf(f, "Integration Method: Runge-Kutta 4\n");
 #elif defined(RK2)

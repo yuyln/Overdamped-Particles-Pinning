@@ -18,7 +18,7 @@ void GSA(const GSAParams &param, Simulator &s)
     double func0, func1, funcmin;
     double T, Tup, t, gammaUp, gammaDown, Tqt;
     memcpy(pmin, s.parts, sizeof(Particle) * s.nParticles);
-    AttBoxes(s.nParticles, s.parts, &s.ParticlePotentialBoxes);
+    AttBoxes(s.nParticles, s.parts, &s.PartPotentialBoxes);
     funcmin = Potential(s, s.parts);
     func0 = funcmin;
     func1 = funcmin;
@@ -63,7 +63,7 @@ void GSA(const GSAParams &param, Simulator &s)
                 s.parts1[ip].y = s.parts[ip].y + delta;
             }
             Boundary(s);
-            AttBoxes(s.nParticles, s.parts1, &s.ParticlePotentialBoxes);
+            AttBoxes(s.nParticles, s.parts1, &s.PartPotentialBoxes);
             func1 = Potential(s, s.parts1);
 
             if (func1 < funcmin)

@@ -122,18 +122,18 @@ double Potential(const Simulator &s, const Particle *p)
     double retPin = 0.0, retPart = 0.0;
     for (size_t i = 0; i < s.nParticles; ++i)
     {
-        int BoxXPin = FindBox(p[i].x, s.PinningBoxes(0, 0).GetLx(), s.PinningBoxes.nCols);
-        int BoxYPin = FindBox(p[i].y, s.PinningBoxes(0, 0).GetLy(), s.PinningBoxes.nRows);
+        int BoxXPin = FindBox(p[i].x, s.PinPotentialBoxes(0, 0).GetLx(), s.PinPotentialBoxes.nCols);
+        int BoxYPin = FindBox(p[i].y, s.PinPotentialBoxes(0, 0).GetLy(), s.PinPotentialBoxes.nRows);
 
-        retPin += InteractWithBoxPotential<Pinning, false>(i, p[i].x, p[i].y, BoxXPin, BoxYPin, s.Lx, s.Ly, s.PinningBoxes, s.pins, s.ExpTable);
+        retPin += InteractWithBoxPotential<Pinning, false>(i, p[i].x, p[i].y, BoxXPin, BoxYPin, s.Lx, s.Ly, s.PinPotentialBoxes, s.pins, s.PinPotentialTable);
     }
 
     for (size_t i = 0; i < s.nParticles; ++i)
     {
-        int BoxXPart = FindBox(p[i].x, s.ParticlePotentialBoxes(0, 0).GetLx(), s.ParticlePotentialBoxes.nCols);
-        int BoxYPart = FindBox(p[i].y, s.ParticlePotentialBoxes(0, 0).GetLy(), s.ParticlePotentialBoxes.nRows);
+        int BoxXPart = FindBox(p[i].x, s.PartPotentialBoxes(0, 0).GetLx(), s.PartPotentialBoxes.nCols);
+        int BoxYPart = FindBox(p[i].y, s.PartPotentialBoxes(0, 0).GetLy(), s.PartPotentialBoxes.nRows);
 
-        retPart += InteractWithBoxPotential<Particle, true>(i, p[i].x, p[i].y, BoxXPart, BoxYPart, s.Lx, s.Ly, s.ParticlePotentialBoxes, p, s.BK0Table);
+        retPart += InteractWithBoxPotential<Particle, true>(i, p[i].x, p[i].y, BoxXPart, BoxYPart, s.Lx, s.Ly, s.PartPotentialBoxes, p, s.PartPotentialTable);
     }
 
     return retPin + retPart / 2.0;
@@ -192,15 +192,15 @@ void Force(const double &x, const double &y, const size_t &i, const double &t, c
     double fxPart = 0.0, fyPart = 0.0;
     double fxPin = 0.0, fyPin = 0.0;
     double fx = 0.0, fy = 0.0;
-    int BoxXPin = FindBox(x, sim.PinningBoxes(0, 0).GetLx(), sim.PinningBoxes.nCols);
-    int BoxYPin = FindBox(y, sim.PinningBoxes(0, 0).GetLy(), sim.PinningBoxes.nRows);
+    int BoxXPin = FindBox(x, sim.PinForceBoxes(0, 0).GetLx(), sim.PinForceBoxes.nCols);
+    int BoxYPin = FindBox(y, sim.PinForceBoxes(0, 0).GetLy(), sim.PinForceBoxes.nRows);
 
-    InteractWithBox<Pinning, false>(i, x, y, BoxXPin, BoxYPin, sim.Lx, sim.Ly, sim.PinningBoxes, sim.pins, sim.ExpTable, fxPin, fyPin);
+    InteractWithBox<Pinning, false>(i, x, y, BoxXPin, BoxYPin, sim.Lx, sim.Ly, sim.PinForceBoxes, sim.pins, sim.PinForceTable, fxPin, fyPin);
 
-    int BoxXPart = FindBox(x, sim.ParticleBoxes(0, 0).GetLx(), sim.ParticleBoxes.nCols);
-    int BoxYPart = FindBox(y, sim.ParticleBoxes(0, 0).GetLy(), sim.ParticleBoxes.nRows);
+    int BoxXPart = FindBox(x, sim.PartForceBoxes(0, 0).GetLx(), sim.PartForceBoxes.nCols);
+    int BoxYPart = FindBox(y, sim.PartForceBoxes(0, 0).GetLy(), sim.PartForceBoxes.nRows);
 
-    InteractWithBox<Particle, true>(i, x, y, BoxXPart, BoxYPart, sim.Lx, sim.Ly, sim.ParticleBoxes, sim.parts, sim.BK1Table, fxPart, fyPart);
+    InteractWithBox<Particle, true>(i, x, y, BoxXPart, BoxYPart, sim.Lx, sim.Ly, sim.PartForceBoxes, sim.parts, sim.PartForceTable, fxPart, fyPart);
 
     fx = fxPart + fxPin;
     fy = fyPart + fyPin;
@@ -342,7 +342,7 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
     s.SaveSystem(prefixSave, suffixSave);
     for (size_t i = 0; i < s.N; ++i)
     {
-        AttBoxes(s.nParticles, s.parts, &s.ParticleBoxes);
+        AttBoxes(s.nParticles, s.parts, &s.PartForceBoxes);
         double t = i * s.h;
         for (size_t ip = 0; ip < s.nParticles; ++ip)
         {

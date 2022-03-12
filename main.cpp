@@ -26,6 +26,7 @@ int main()
     //      Fix Bug no pinning         (V)
     //      Multithread GSA            (X)
     //      Multithread Integration    (X)
+    //      Test generalized forces/potential (X)
 
     GSAParams gsap;
     gsap.innerLoop = 100000;
