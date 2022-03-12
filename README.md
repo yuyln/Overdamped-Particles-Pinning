@@ -2,7 +2,7 @@
 
 This code simulates overdamped particles that follows the Langevin equation:
 
-<p align="center"><img src="svgs/b99f817a3683fa5bc589d21e3121fe8f.svg?invert_in_darkmode" align=middle width=320.49067379999997pt height=39.26959575pt/></p>
+<p align="center"><img src="svgs/8247f6caa7b04141eed441d42a66cbbf.svg?invert_in_darkmode" align=middle width=362.8324095pt height=39.26959575pt/></p>
 
 Where 
 <img src="svgs/0374c41447147ca3648ee247708ef2dc.svg?invert_in_darkmode" align=middle width=22.847224949999998pt height=14.611878600000017pt/> 
@@ -58,9 +58,11 @@ is the pinning radius. From the potential I get the force
 where 
 <img src="svgs/e7e8964f640e4fbcbe0423b8a1a424cc.svg?invert_in_darkmode" align=middle width=76.87209585pt height=44.70706679999999pt/>.
 
-The last term, is the current force, which can be of any form, in special here I consider the most general form of 
+The third term, is the current force, which can be of any form, in special here I consider the most general form of 
 <img src="svgs/cd53890f1d3199b999128b63de2fc5de.svg?invert_in_darkmode" align=middle width=139.2480738pt height=27.6567522pt/>
 . For more detail see the input file `input/input.in`, where all the options are avaiable.
+
+The last term is the temperature effect, it is modeled using random kicks in the particle position, and we use a distribuition such that <img src="svgs/41d1475bd1f4d4c7c638e2034f307782.svg?invert_in_darkmode" align=middle width=77.3644806pt height=27.94539330000001pt/>.
 
 I used many molecular dynamics technics for optimization, such as subboxes, mirror boxes, lookup tables. However, if you have any further optimization, please send my a [email](mailto:jc.souza@unesp.br)
 
@@ -94,7 +96,7 @@ The input file `input/input.in' gives a variety of options. I highly recommend j
 
 A output folder is created `out` and inside you will find the average velocity file, and a folder that separetes the average velocity by `BETADAMP` value. You will also find a `positions` folder, that will have the positions files for the particles, the files will be present if and only if `WRITE` on the input file is set to `1`. There will be a `simulator_data.out` file inside, that has informations about the simulation. 
 
-The velocity file has the current value, the velocity in the <img src="svgs/332cc365a4987aacce0ead01b8bdcc0b.svg?invert_in_darkmode" align=middle width=9.39498779999999pt height=14.15524440000002pt/> direction and the velocity in the <img src="svgs/deceeaf6940a8c7a5a02373728002b0f.svg?invert_in_darkmode" align=middle width=8.649225749999989pt height=14.15524440000002pt/> direction, in this order.
+The velocity file has the current value, the velocity in the <img src="svgs/cd0781ba124922cc88b8210a09b4162e.svg?invert_in_darkmode" align=middle width=17.61419715pt height=14.15524440000002pt/> direction and the velocity in the <img src="svgs/7d226986593183423b49f90d8303043c.svg?invert_in_darkmode" align=middle width=16.8684351pt height=14.15524440000002pt/> direction, in this order.
 
 One more important thing, the program saves snapshots of the configuration for each current step. This is very useful for cases where the computer shutdown, for example, where I run these simulation there is a serious problem with energy, and this helps a lot to not lose everything that already ran. This can also be used for save space, suppose this: you alread ran an simulation, and has the velocity-force curves, but want some trajectories, how would you do it, if you didn´t save the positions? You could rerun everything, but for many systems this could take a lot of time. With this, you can ran everything, and when you need a trajectory, just set the program to `RECOVERY` (putting a `1` on input file) and run it, with this you will get the desired trajectory. With this you save time and space, just remember to set `WRITE` to `1` too, otherwise it will not write the positions files. By the way, the positions files are very heavy, so there is a `Ncut` on input file, which cuts the positions file by that number. I often use `Ncut: 50`, as the positions file will take only <img src="svgs/45a0b00b513fa74f40b37aafadb94773.svg?invert_in_darkmode" align=middle width=21.91788224999999pt height=24.65753399999998pt/> of the original, and the positions will still be very clear and smooth. For animations I recommend using something like `5`, `10`, `20`, it deppends on you.
 
@@ -111,7 +113,7 @@ TODO:
 - [X] Make GSA works.
 - [ ] Multithread Simulation.
 - [ ] Multithread GSA.
-- [ ] Find GSA parameters by files insted of hard coding.
+- [ ] Find GSA parameters by files instead of hard coding.
 - [ ] Make a system to run many GSA with different parameters for find the absolute ground state.
 - [ ] Add references to `README.md`.
 - [ ] Add some figures of velocity-force curves, and trajectories.
