@@ -12,3 +12,6 @@ out
 saves
 README copy.md
 latex.py
+*.py
+out.png
+__pycache__

@@ -1,6 +1,6 @@
 Number of Steps N: 500000
 Simulation Time tmax: 500.0
-Number of Current Steps CURRSTEPS: 1
+Number of Current Steps CURRSTEPS: 3000
 Max Current Value FCMAX: 3.0
 Box Length LX: 36.0
 Box Length LY: 36.0
