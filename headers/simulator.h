@@ -46,7 +46,7 @@ typedef struct Simulator
     double sqrtTemp, Lx, Ly;
     size_t nParticles, nPinnings;
     double h, tmax;
-    size_t N, NCut;
+    size_t N, NCut, NThreads;
     double *WriteX, *WriteY;
     bool Write;
     bool Recovery;
@@ -72,6 +72,7 @@ typedef struct Simulator
         int nData;
         char **d = Parse(data, &nData);
         N = (size_t)GetValueInt("N", d, nData);
+        NThreads = (size_t)GetValueInt("NTHREADS", d, nData);
         NCut = (size_t)GetValueInt("NCut", d, nData);
         Write = (bool)GetValueInt("WRITE", d, nData);
         Recovery = (bool)GetValueInt("RECOVERY", d, nData);
@@ -288,6 +289,7 @@ typedef struct Simulator
             fprintf(stderr, "NOT POSSIBLE TO OPEN FILE %s: %s", name, strerror(errno));
             exit(1);
         }
+        fprintf(f, "Number of Threads: %zu\n", NThreads);
         fprintf(f, "Integration Steps: %zu\n", N);
         fprintf(f, "Integration Time: %.6f\n", tmax);
         fprintf(f, "Integration Step: %.6f\n", h);

@@ -53,7 +53,7 @@ int main()
     }
 
     StartMeasure("ALL");
-    for (double FC = s.FC; FC <= s.FCMax; FC += s.hFC)
+    for (double FC = s.FC; FC <= s.FCMax + s.hFC; FC += s.hFC)
     {
         s.FixCurrent(FC);
         Integration(s, "", "");

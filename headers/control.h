@@ -5,6 +5,7 @@
 #include <functions.h>
 #include <string.h>
 #include <errno.h>
+#include <omp.h>
 static const double pi = acos(-1.0);
 
 int FindBox(const double &p, const double &BoxSize, const size_t &nMax)
@@ -344,6 +345,7 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
     {
         AttBoxes(s.nParticles, s.parts, &s.PartForceBoxes);
         double t = i * s.h;
+        #pragma omp parallel for num_threads(s.NThreads)
         for (size_t ip = 0; ip < s.nParticles; ++ip)
         {
             Att(ip, t, s);
@@ -351,6 +353,7 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
         Boundary(s);
         Reset(s);
         AttWrite(s, i);
+        if (i % s.NCut == 0) { printf("%.2f\n", (double)i / (double)s.N * 100.0); }
     }
     WriteToFile(s, prefixSave, suffixSave);
     FILE *vel = fopen("./out/velocity.out", "a");
