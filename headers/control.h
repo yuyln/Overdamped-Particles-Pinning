@@ -345,7 +345,7 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
     {
         AttBoxes(s.nParticles, s.parts, &s.PartForceBoxes);
         double t = i * s.h;
-        #pragma omp parallel for num_threads(s.NThreads)
+        #pragma omp parallel for num_threads(s.NThreads) shared(s, t)
         for (size_t ip = 0; ip < s.nParticles; ++ip)
         {
             Att(ip, t, s);
@@ -353,7 +353,7 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
         Boundary(s);
         Reset(s);
         AttWrite(s, i);
-        if (i % s.NCut == 0) { printf("%.2f\n", (double)i / (double)s.N * 100.0); }
+        // if (i % s.NCut == 0) { printf("%.2f\n", (double)i / (double)s.N * 100.0); }
     }
     WriteToFile(s, prefixSave, suffixSave);
     FILE *vel = fopen("./out/velocity.out", "a");

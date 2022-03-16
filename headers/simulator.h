@@ -149,11 +149,12 @@ typedef struct Simulator
 
         if (CreateFoldersEtc)
         {
-            system("mkdir out");
-            system("mkdir \"out/positions\"");
-            system("mkdir saves");
-            system("mkdir \"saves/snaps\"");
-            system("mkdir \"./out/velocity_per_beta\"");
+            int i = system("mkdir out");
+            i = system("mkdir \"out/positions\"");
+            i = system("mkdir saves");
+            i = system("mkdir \"saves/snaps\"");
+            i = system("mkdir \"./out/velocity_per_beta\"");
+            (void)i;
             if (!Recovery)
             {
                 FILE *f = fopen("./out/velocity.out", "wb");
