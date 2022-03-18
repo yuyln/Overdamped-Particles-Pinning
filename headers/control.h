@@ -366,8 +366,8 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
     {
         double betadamp = i->first;
         char *name;
-        size_t size = snprintf(NULL, 0, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
-        name = new char[size + 1];
+        size_t size = snprintf(NULL, 0, "./out/velocity_per_beta/velocity_%.5f.out", betadamp) + 1;
+        name = new char[size];
         snprintf(name, size, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
         FILE *f = fopen(name, "a");
         delete[] name;
