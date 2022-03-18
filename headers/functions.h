@@ -243,7 +243,7 @@ Matrix<Box> CreateBoxes(double range, size_t nPar, double Lx, double Ly, const E
 }
 
 template <typename E>
-void AttBoxes(const size_t &nPar, const E* p, Matrix<Box> *out)
+void AttBoxesOld(const size_t &nPar, const E* p, Matrix<Box> *out)
 {
     for (size_t i = 0; i < out->nCols; ++i)
     {
@@ -251,6 +251,28 @@ void AttBoxes(const size_t &nPar, const E* p, Matrix<Box> *out)
         {
             (*out)(j, i).AttBox(p, nPar);
         }
+    }
+}
+
+template <typename E>
+void AttBoxes(const size_t &nPar, const E* p, Matrix<Box> *out)
+{
+    for (size_t i = 0; i < out->nCols; ++i)
+    {
+        for (size_t j = 0; j < out->nRows; ++j)
+        {
+            (*out)(j, i).SetIn(0);
+        }
+    }
+
+    for (size_t i = 0; i < nPar; ++i)
+    {
+        int iX = p[i].x / (*out)(0, 0).GetLx();
+        int iY = p[i].y / (*out)(0, 0).GetLy();
+        int ind = (*out)(iY, iX).GetIn();
+        (*out)(iY, iX).SetIndex(ind, i);
+        ind++;
+        (*out)(iY, iX).SetIn(ind);
     }
 }
 

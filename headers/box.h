@@ -33,6 +33,8 @@ public:
     const size_t & GetIndex(const size_t &i) const noexcept { return indexes[i]; }
     const double & GetLx() const noexcept { return lx; }
     const double & GetLy() const noexcept { return ly; }
+    void SetIn(size_t i) noexcept { nIn = i; }
+    void SetIndex(size_t index, size_t value) { indexes[index] = value; }
 };
 
 #endif

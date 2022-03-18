@@ -11,9 +11,6 @@
 
 typedef struct Simulator
 {
-    // Table ExpTable, BK0Table, BK1Table;
-    // Matrix<Box> PinningBoxes, ParticleBoxes, ParticlePotentialBoxes;
-
     Table PinPotentialTable, PinForceTable,
           PartPotentialTable, PartForceTable;
 
@@ -105,21 +102,17 @@ typedef struct Simulator
         omegaX = tmax / GetValueDouble("NACX", d, nData);
         omegaY = tmax / GetValueDouble("NACY", d, nData);
 
-        // ExpTable = Table(1000000, 0.21e-4, 0.0, [](double x)
-        //                  { return exp(-x); });
-        // BK0Table = Table(1000000, 0.21e-4, 0.0, [](double x)
-        //                  { return BESSK0(x); });
-        // BK1Table = Table(1000000, 0.21e-4, 1.0, [](double x)
-        //                  { return BESSK1(x) / x; });
+        double range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return exp(-x); });
+        PinPotentialTable = Table(1e6, 0.0, range, 1.0, 0.0, [](double x){ return exp(-x); });
 
-        PinPotentialTable = Table(1000000, 0.21e-3, 0.0, [](double x)
-                         { return exp(-x); });
-        PinForceTable = Table(1000000, 0.21e-3, 0.0, [](double x)
-                         { return exp(-x); });
-        PartPotentialTable = Table(1000000, 0.21e-3, 0.0, [](double x)
-                         { return BESSK0(x); });
-        PartForceTable = Table(1000000, 0.21e-3, 1.0, [](double x)
-                         { return BESSK1(x) / x; });
+        range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return exp(-x); });
+        PinForceTable = Table(1e6, 0.0, range, 1.0, 0.0, [](double x){ return exp(-x); });
+
+        range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return BESSK0(x); });
+        PartPotentialTable = Table(1e6, 0.0001, range, BESSK0(0.0001), 0.0, [](double x){ return BESSK0(x); });
+
+        range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return BESSK1(x) / x; });
+        PartForceTable = Table(1e6, 0.0001, range, BESSK1(0.0001) / 0.0001, 0.0, [](double x){ return BESSK1(x) / x; });
 
         double R0Max = 0.0;
         for (size_t i = 0; i < nPinnings; ++i)
@@ -134,10 +127,6 @@ typedef struct Simulator
             R0Max = 1.0;
         }
         FC = 0.0;
-        // PinningBoxes = CreateBoxes(R0Max * sqrt(ExpTable.getMaxRange()), nPinnings, Lx, Ly, pins);
-        // ParticleBoxes = CreateBoxes(BK1Table.getMaxRange(), nParticles, Lx, Ly, parts);
-        // ParticlePotentialBoxes = CreateBoxes(BK0Table.getMaxRange(), nParticles, Lx, Ly, parts);
-        // AttBoxes(nPinnings, pins, &PinningBoxes);
 
         PinPotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange()), nPinnings, Lx, Ly, pins);
         PinForceBoxes = CreateBoxes(R0Max * sqrt(PinForceTable.getMaxRange()), nPinnings, Lx, Ly, pins);
