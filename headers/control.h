@@ -337,7 +337,7 @@ void WriteToFile(Simulator &s, const char *prefix, const char *suffix)
     fclose(f);
 }
 
-void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
+void IntegrationMult(Simulator &s, const char *prefixSave, const char *suffixSave)
 {
     s.ZeroVelocity();
     s.SaveSystem(prefixSave, suffixSave);
@@ -379,6 +379,48 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
         fprintf(f, "%.15f\t%.15f\t%.15f\n", s.FC, s.VmxBeta[betadamp], s.VmyBeta[betadamp]);
         fclose(f);
     }
+}
 
+void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
+{
+    s.ZeroVelocity();
+    s.SaveSystem(prefixSave, suffixSave);
+    for (size_t i = 0; i < s.N; ++i)
+    {
+        AttBoxes(s.nParticles, s.parts, &s.PartForceBoxes);
+        double t = i * s.h;
+        for (size_t ip = 0; ip < s.nParticles; ++ip)
+        {
+            Att(ip, t, s);
+        }
+        Boundary(s);
+        Reset(s);
+        AttWrite(s, i);
+        // if (i % s.NCut == 0) { printf("%.2f\n", (double)i / (double)s.N * 100.0); }
+    }
+    WriteToFile(s, prefixSave, suffixSave);
+    FILE *vel = fopen("./out/velocity.out", "a");
+    s.CalculateAverageVelocity();
+    fprintf(vel, "%.15f\t%.15f\t%.15f\n", s.FC, s.VXm, s.VYm);
+    fclose(vel);
+
+    s.CalculateAverageVelocityPerBeta();
+    for (std::map<double, size_t>::iterator i = s.betaQnt.begin(); i != s.betaQnt.end(); ++i)
+    {
+        double betadamp = i->first;
+        char *name;
+        size_t size = snprintf(NULL, 0, "./out/velocity_per_beta/velocity_%.5f.out", betadamp) + 1;
+        name = new char[size];
+        snprintf(name, size, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
+        FILE *f = fopen(name, "a");
+        delete[] name;
+        if (f == NULL)
+        {
+            fprintf(stderr, "NOT POSSIBLE TO OPEN FILE %s: %s\n", name, strerror(errno));
+            exit(1);
+        }
+        fprintf(f, "%.15f\t%.15f\t%.15f\n", s.FC, s.VmxBeta[betadamp], s.VmyBeta[betadamp]);
+        fclose(f);
+    }
 }
 #endif

@@ -56,7 +56,14 @@ int main()
     for (double FC = s.FC; FC <= s.FCMax + s.hFC; FC += s.hFC)
     {
         s.FixCurrent(FC);
-        Integration(s, "", "");
+        if (s.NThreads > 1)
+        {
+            IntegrationMult(s, "", "");
+        }
+        else
+        {
+            Integration(s, "", "");
+        }
         printf("%.4f %.4f\n", FC, s.FCMax);
     }
     EndMeasure("ALL");
