@@ -99,8 +99,8 @@ typedef struct Simulator
         DCFixedY = DCFixed * sin(DCFixedAng);
         sqrtTemp = sqrt(GetValueDouble("TEMP", d, nData));
 
-        omegaX = tmax / GetValueDouble("NACX", d, nData);
-        omegaY = tmax / GetValueDouble("NACY", d, nData);
+        omegaX = GetValueDouble("NACX", d, nData) / tmax;
+        omegaY = GetValueDouble("NACY", d, nData) / tmax;
 
         double range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return exp(-x); });
         PinPotentialTable = Table(1e6, 0.0, range, 1.0, 0.0, [](double x){ return exp(-x); });
