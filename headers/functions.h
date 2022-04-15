@@ -11,17 +11,17 @@
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
-#include <pinning.h>
 #include <parser.h>
 #include <particle.h>
 #include <matrix.h>
 #include <box.h>
+#include <line.h>
 
 int FindNumberFilesInsideDir(const char *dir);
 char **FindFilesInsideDir(const char *dir, int *nf);
 void ParseFilesInsideDir(const char *dir, int *nfiles, int **qnt, char ****parsed);
-int InitPinnings(Pinning **p);
 int InitParticles(Particle **p);
+int InitLines(LineSegment **l);
 
 inline double myrandom() noexcept
 {
@@ -104,61 +104,6 @@ void ParseFilesInsideDir(const char *dir, int *nfiles, int **qnt, char ****parse
     }
 }
 
-int InitPinnings(Pinning **p)
-{
-    int nfiles;
-    int *qnt;
-    char ***parsed;
-    ParseFilesInsideDir("./input/pinnings", &nfiles, &qnt, &parsed);
-    int nPi = 0;
-
-    for (int i = 0; i < nfiles; i++)
-    {
-        int ip = GetIndexOfTag("Positions", parsed[i], qnt[i]);
-
-        int start = 0;
-        if (strlen(parsed[i][ip + 1]) == 1)
-        {
-            start = ip + 2;
-        }
-        else
-        {
-            start = ip + 1;
-        }
-        for (int j = start; j < qnt[i]; j += 2)
-        {
-            nPi++;
-        }
-    }
-    *p = new Pinning[nPi];
-
-    int j_ = 0;
-    for (int i = 0; i < nfiles; i++)
-    {
-        double U0 = GetValueDouble("U0", parsed[i], qnt[i]);
-        double R0 = GetValueDouble("R0", parsed[i], qnt[i]);
-
-        int ip = GetIndexOfTag("Positions", parsed[i], qnt[i]);
-        int start = 0;
-        if (strlen(parsed[i][ip + 1]) == 1)
-        {
-            start = ip + 2;
-        }
-        else
-        {
-            start = ip + 1;
-        }
-        
-        for (int j = start; j < qnt[i]; j += 2)
-        {
-            double x = strtod(parsed[i][j], NULL);
-            double y = strtod(parsed[i][j + 1], NULL);
-            (*p)[j_] = Pinning(x, y, U0, R0);
-            j_++;
-        }
-    }
-    return nPi;
-}
 
 int InitParticles(Particle **p)
 {
@@ -212,6 +157,62 @@ int InitParticles(Particle **p)
     }
     return nP;
 }
+
+int InitLines(LineSegment **l)
+{
+    int nfiles;
+    int *qnt;
+    char ***parsed;
+    ParseFilesInsideDir("./input/lines", &nfiles, &qnt, &parsed);
+    int nL = 0;
+
+    for (int i = 0; i < nfiles; i++)
+    {
+        int ip = GetIndexOfTag("Positions", parsed[i], qnt[i]);
+        int start = 0;
+        if (strlen(parsed[i][ip + 1]) == 1)
+        {
+            start = ip + 2;
+        }
+        else
+        {
+            start = ip + 1;
+        }
+        for (int j = start; j < qnt[i]; j += 4)
+        {
+            nL++;
+        }
+    }
+    *l = new LineSegment[nL];
+
+    int j_ = 0;
+    for (int i = 0; i < nfiles; i++)
+    {
+        double U0 = GetValueDouble("Potential", parsed[i], qnt[i]);
+        double R = GetValueDouble("Radius", parsed[i], qnt[i]);
+        int ip = GetIndexOfTag("Positions", parsed[i], qnt[i]);
+        int start = 0;
+        if (strlen(parsed[i][ip + 1]) == 1)
+        {
+            start = ip + 2;
+        }
+        else
+        {
+            start = ip + 1;
+        }
+        for (int j = start; j < qnt[i]; j += 4)
+        {
+            double x = strtod(parsed[i][j], NULL);
+            double y = strtod(parsed[i][j + 1], NULL);
+            double x1 = strtod(parsed[i][j + 2], NULL);
+            double y1 = strtod(parsed[i][j + 3], NULL);
+            (*l)[j_] = LineSegment(x, y, x1, y1, R, U0);
+            j_++;
+        }
+    }
+    return nL;
+}
+
 
 template <typename E>
 Matrix<Box> CreateBoxes(double range, size_t nPar, double Lx, double Ly, const E* const p)

@@ -121,16 +121,22 @@ double InteractWithBoxPotential(const size_t &ic, const double &x, const double 
 double Potential(const Simulator &s, const Particle *p)
 {
     double retPin = 0.0, retPart = 0.0;
-    for (size_t i = 0; i < s.nParticles; ++i)
-    {
-        int BoxXPin = FindBox(p[i].x, s.PinPotentialBoxes(0, 0).GetLx(), s.PinPotentialBoxes.nCols);
-        int BoxYPin = FindBox(p[i].y, s.PinPotentialBoxes(0, 0).GetLy(), s.PinPotentialBoxes.nRows);
-
-        retPin += InteractWithBoxPotential<Pinning, false>(i, p[i].x, p[i].y, BoxXPin, BoxYPin, s.Lx, s.Ly, s.PinPotentialBoxes, s.pins, s.PinPotentialTable);
-    }
 
     for (size_t i = 0; i < s.nParticles; ++i)
     {
+
+        for (int II = -1; II <= 1; ++II)
+        {
+            for (int JJ = -1; JJ <= 1; ++JJ)
+            {
+                for (size_t j = 0; j < s.nlines; ++j)
+                {
+                    retPin += LineSegment::Potential(&s.lines[j], p[i].x + (double)II * s.Lx, p[i].y + (double)JJ * s.Ly, s.PinPotentialTable);
+                }
+            }
+        }
+
+
         int BoxXPart = FindBox(p[i].x, s.PartPotentialBoxes(0, 0).GetLx(), s.PartPotentialBoxes.nCols);
         int BoxYPart = FindBox(p[i].y, s.PartPotentialBoxes(0, 0).GetLy(), s.PartPotentialBoxes.nRows);
 
@@ -140,68 +146,32 @@ double Potential(const Simulator &s, const Particle *p)
     return retPin + retPart / 2.0;
 }
 
-/*void InteractWithBoxParticle(const size_t &ic, const double &x, const double &y, const size_t iX, const size_t iY, const double &Lx, const double &Ly, 
-                     const Matrix<Box> &Box, const Particle *p, const Table &table, double &fxO, double &fyO)
-{
-    double fx_ = 0.0, fy_ = 0.0;
-    for (int i = -1; i <= 1; ++i)
-    {
-        int iBx = (int)iX + i;
-        bool left = iBx < 0;
-        bool right = iBx >= (int)Box.nCols;
-        if (right)
-        {
-            iBx = 0;
-        }
-        else if (left)
-        {
-            iBx = Box.nCols - 1;
-        }
-        int factorX = right - left;
-        for (int j = -1; j <= 1; ++j)
-        {
-            int iBy = (int)iY + j;
-            bool down = iBy < 0;
-            bool up = iBy >= (int)Box.nRows;
-            if (up)
-            {
-                iBy = 0;
-            }
-            else if (down)
-            {
-                iBy = Box.nRows - 1;
-            }
-            int factorY = up - down;
-
-            for (size_t iB = 0; iB < Box(iBy, iBx).GetIn(); ++iB)
-            {
-                double fx, fy;
-                size_t I = Box(iBy, iBx).GetIndex(iB);
-                // if (ignore) { if (I == ic) { continue; } }
-                Particle::Force(&p[I], x - factorX * Lx, y - factorY * Ly, table, &fx, &fy);
-                fx_ += fx;
-                fy_ += fy;
-            }
-        }
-    }
-    fxO = fx_;
-    fyO = fy_;
-}*/
 
 void Force(const double &x, const double &y, const size_t &i, const double &t, const Simulator &sim, double &fxO, double &fyO)
 {
     double fxPart = 0.0, fyPart = 0.0;
     double fxPin = 0.0, fyPin = 0.0;
     double fx = 0.0, fy = 0.0;
-    int BoxXPin = FindBox(x, sim.PinForceBoxes(0, 0).GetLx(), sim.PinForceBoxes.nCols);
-    int BoxYPin = FindBox(y, sim.PinForceBoxes(0, 0).GetLy(), sim.PinForceBoxes.nRows);
-
-    InteractWithBox<Pinning, false>(i, x, y, BoxXPin, BoxYPin, sim.Lx, sim.Ly, sim.PinForceBoxes, sim.pins, sim.PinForceTable, fxPin, fyPin);
 
     int BoxXPart = FindBox(x, sim.PartForceBoxes(0, 0).GetLx(), sim.PartForceBoxes.nCols);
     int BoxYPart = FindBox(y, sim.PartForceBoxes(0, 0).GetLy(), sim.PartForceBoxes.nRows);
 
     InteractWithBox<Particle, true>(i, x, y, BoxXPart, BoxYPart, sim.Lx, sim.Ly, sim.PartForceBoxes, sim.parts, sim.PartForceTable, fxPart, fyPart);
+
+    for (int II = -1; II <= 1; ++II)
+    {
+        for (int JJ = -1; JJ <= 1; ++JJ)
+        {
+            for (size_t O = 0; O < sim.nlines; ++O)
+            {
+                double fxl, fyl;
+                LineSegment::Force(&sim.lines[O], x + (double)II * sim.Lx, y + (double)JJ * sim.Ly, sim.PinForceTable, &fxl, &fyl);
+                fxPin += fxl;
+                fyPin += fyl;
+            }
+        }
+    }
+
 
     fx = fxPart + fxPin;
     fy = fyPart + fyPin;

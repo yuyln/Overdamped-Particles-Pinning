@@ -8,13 +8,13 @@
 #include <table.h>
 #include <besselfunc.h>
 #include <particle.h>
-#include <pinning.h>
 #include <functions.h>
 #include <box.h>
 #include <matrix.h>
 #include <control.h>
 #include <simulator.h>
 #include <GSA.h>
+#include <line.h>
 
 int main()
 {

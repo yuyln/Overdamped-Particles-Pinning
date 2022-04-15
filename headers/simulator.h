@@ -5,22 +5,24 @@
 #include <box.h>
 #include <table.h>
 #include <particle.h>
-#include <pinning.h>
 #include <functions.h>
 #include <map>
+#include <line.h>
+#include <region.h>
 
 typedef struct Simulator
 {
     Table PinPotentialTable, PinForceTable,
           PartPotentialTable, PartForceTable;
 
-    Matrix<Box> PinPotentialBoxes, PinForceBoxes,
-                PartPotentialBoxes, PartForceBoxes;
-    Pinning *pins;
+    Matrix<Box> PartPotentialBoxes, PartForceBoxes;
     Particle *parts;
     Particle *parts1;
+    size_t nlines;
+    LineSegment *lines;
     std::map<double, size_t> betaQnt;
     std::map<double, double> VmxBeta, VmyBeta;
+
 
     double VXm, VYm;
 
@@ -41,7 +43,7 @@ typedef struct Simulator
     double DCFixedAng;
 
     double sqrtTemp, Lx, Ly;
-    size_t nParticles, nPinnings;
+    size_t nParticles;
     double h, tmax;
     size_t N, NCut, NThreads;
     double *WriteX, *WriteY;
@@ -50,9 +52,9 @@ typedef struct Simulator
 
     Simulator(bool CreateFoldersEtc)
     {
-        nPinnings = InitPinnings(&pins);
         nParticles = InitParticles(&parts);
         InitParticles(&parts1);
+        nlines = (size_t)InitLines(&lines);
         for (size_t i = 0; i < nParticles; ++i)
         {
             betaQnt[parts[i].betadamp] = 0;
@@ -114,27 +116,10 @@ typedef struct Simulator
         range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return BESSK1(x) / x; });
         PartForceTable = Table(1e6, 0.0001, range, BESSK1(0.0001) / 0.0001, 0.0, [](double x){ return BESSK1(x) / x; });
 
-        double R0Max = 0.0;
-        for (size_t i = 0; i < nPinnings; ++i)
-        {
-            if (pins[i].R0 >= R0Max)
-            {
-                R0Max = pins[i].R0;
-            }
-        }
-        if (nPinnings == 0)
-        {
-            R0Max = 1.0;
-        }
         FC = 0.0;
 
-        PinPotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange()), nPinnings, Lx, Ly, pins);
-        PinForceBoxes = CreateBoxes(R0Max * sqrt(PinForceTable.getMaxRange()), nPinnings, Lx, Ly, pins);
         PartPotentialBoxes = CreateBoxes(PartPotentialTable.getMaxRange(), nParticles, Lx, Ly, parts);
         PartForceBoxes = CreateBoxes(PartForceTable.getMaxRange(), nParticles, Lx, Ly, parts);
-
-        AttBoxes(nPinnings, pins, &PinPotentialBoxes);
-        AttBoxes(nPinnings, pins, &PinForceBoxes);
 
         if (CreateFoldersEtc)
         {
@@ -287,7 +272,6 @@ typedef struct Simulator
         fprintf(f, "Max Current: %.6f\n", FCMax);
         fprintf(f, "Current Step: %.6f\n", hFC);
         fprintf(f, "Number of Particles: %zu\n", nParticles);
-        fprintf(f, "Number of Pinnings: %zu\n", nPinnings);
         fprintf(f, "AC Factor in X: %.6f\n", ACXFactor);
         fprintf(f, "AC Factor in Y: %.6f\n", ACYFactor);
         fprintf(f, "Omega in X: %.6f\n", omegaX);
@@ -305,14 +289,6 @@ typedef struct Simulator
         fprintf(f, "Pinning Boxes:\n");
         fprintf(f, "Potential Cutoff: %.6f\n", PinPotentialTable.getMaxRange());
         fprintf(f, "Force Cutoff: %.6f\n", PinForceTable.getMaxRange());
-        fprintf(f, "Size of Boxes in X for Pinning Potential: %.6f\n", PinPotentialBoxes(0, 0).GetLx());
-        fprintf(f, "Size of Boxes in Y for Pinning Potential: %.6f\n", PinPotentialBoxes(0, 0).GetLy());
-        fprintf(f, "Size of Boxes in X for Pinning Force: %.6f\n", PinForceBoxes(0, 0).GetLx());
-        fprintf(f, "Size of Boxes in Y for Pinning Force: %.6f\n", PinForceBoxes(0, 0).GetLy());
-        fprintf(f, "Number of Boxes in X for Pinning Potential: %zu\n", PinPotentialBoxes.nCols);
-        fprintf(f, "Number of Boxes in Y for Pinning Potential: %zu\n", PinPotentialBoxes.nRows);
-        fprintf(f, "Number of Boxes in X for Pinning Force: %zu\n", PinForceBoxes.nCols);
-        fprintf(f, "Number of Boxes in Y for Pinning Force: %zu\n", PinForceBoxes.nRows);
         fprintf(f, "---------------------------\n");
         fprintf(f, "Particle Boxes:\n");
         fprintf(f, "Potential Cutoff: %.6f\n", PartPotentialTable.getMaxRange());
@@ -333,6 +309,33 @@ typedef struct Simulator
         fprintf(f, "Integration Method: Euler\n");
 #endif
         fclose(f);
+
+        f = fopen("./out/potential.out", "wb");
+        double x0 = 0.0, y0 = 0.0;
+        double x1 = Lx, y1 = Ly;
+
+        for (size_t i = 0; i < nlines; ++i)
+        {
+            if (lines[i].p0.X() < x0) { x0 = lines[i].p0.X(); }
+            if (lines[i].p0.Y() < y0) { y0 = lines[i].p0.Y(); }
+
+            if (lines[i].p1.X() > x1) { x1 = lines[i].p1.X(); }
+            if (lines[i].p1.Y() > y1) { y1 = lines[i].p1.Y(); }
+        }
+        for (double x = x0; x < x1; x += 0.1)
+        {
+            for (double y = y0; y < y1; y += 0.1)
+            {
+                double p = 0.0;
+                for (size_t i = 0; i < nlines; ++i)
+                {
+                    p += LineSegment::Potential(&lines[i], x, y, PinPotentialTable);
+                }
+                fprintf(f, "%f\t%f\t%.15f\n", x, y, p);
+            }
+        }
+        fclose(f);
+    
     }
 
     void ZeroVelocity()

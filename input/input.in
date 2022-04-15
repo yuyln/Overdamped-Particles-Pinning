@@ -1,5 +1,5 @@
-Number of Steps N: 50000
-Simulation Time tmax: 500.0
+Number of Steps N: 500000
+Simulation Time tmax: 10.0
 Number of Current Steps CURRSTEPS: 1
 Max Current Value FCMAX: 3.0
 Box Length LX: 36.0
@@ -15,7 +15,7 @@ DC Fixed Angle (degrees) DCANGFI: 0.0
 Number of Oscilation in X NACX: 100
 Number of Oscilation in Y NACY: 100
 Temperature TEMP: 0.0
-Cut Factor NCut: 50
+Cut Factor NCut: 5
 Number of Threads, note `not always it will make the code go faster` NTHREADS: 1
 Write to File WRITE: 1
 Recovery Mode RECOVERY: 0
