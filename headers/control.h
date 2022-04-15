@@ -181,6 +181,9 @@ void Force(const double &x, const double &y, const size_t &i, const double &t, c
 
     fx += (sim.A + sim.A_F) * sin(2.0 * pi * sim.omegaX * t);
     fy += (sim.B + sim.B_F) * cos(2.0 * pi * sim.omegaY * t);
+    // if (sim.A > 0.0 || sim.B > 0.0){ printf("%f %f %f\n", (sim.A + sim.A_F) * sin(2.0 * pi * sim.omegaX * t), 
+    //                                                       sin(2.0 * pi * sim.omegaX * t), 
+    //                                                       2.0 * pi * sim.omegaX * t); }
 
     fx += (2.0 * myrandom() - 1.0) * sim.sqrtTemp;
     fy += (2.0 * myrandom() - 1.0) * sim.sqrtTemp;
