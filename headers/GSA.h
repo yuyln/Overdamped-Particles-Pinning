@@ -11,6 +11,33 @@ public:
     size_t outerLoop, innerLoop, printParam;
 };
 
+void ReadGSAParams(GSAParams **gsap)
+{
+    int nfiles;
+    int *qnt;
+    char ***parsed;
+    ParseFilesInsideDir("./input/GSA", &nfiles, &qnt, &parsed);
+    *gsap = new GSAParams[nfiles];
+
+    for (int i = 0; i < nfiles; i++)
+    {
+        double qA = GetValueDouble("qA", parsed[i], qnt[i]);
+        double qV = GetValueDouble("qV", parsed[i], qnt[i]);
+        double qT = GetValueDouble("qT", parsed[i], qnt[i]);
+        double T0 = GetValueDouble("T0", parsed[i], qnt[i]);
+        size_t outer = (size_t)GetValueUInt("OL", parsed[i], qnt[i]);
+        size_t inner = (size_t)GetValueUInt("IL", parsed[i], qnt[i]);
+        size_t print = (size_t)GetValueUInt("PP", parsed[i], qnt[i]);
+        (*gsap)[i].qA = qA;
+        (*gsap)[i].qV = qV;
+        (*gsap)[i].qT = qT;
+        (*gsap)[i].T0 = T0;
+        (*gsap)[i].outerLoop = outer;
+        (*gsap)[i].innerLoop = inner;
+        (*gsap)[i].printParam = inner / print;            
+    }
+}
+
 void GSA(const GSAParams &param, Simulator &s)
 {
     double qA1, qT1, qV1, OneqA1, coef, coef1, r, pqa, df, tmp, exp1, exp2;
