@@ -24,11 +24,6 @@ public:
             return 0.0;
         }
 
-        if (dx == 0.0 && dy == 0.0)
-        {
-            return 0.0;
-        }
-
         d = sqrt(dx * dx + dy * dy);
         return cur->U0 * table(d);
     }

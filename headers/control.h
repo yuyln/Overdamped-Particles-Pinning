@@ -135,8 +135,8 @@ double Potential(const Simulator &s, const Particle *p)
         int BoxYPart = FindBox(p[i].y, s.PartPotentialBoxes(0, 0).GetLy(), s.PartPotentialBoxes.nRows);
 
         retPart += InteractWithBoxPotential<Particle, true>(i, p[i].x, p[i].y, BoxXPart, BoxYPart, s.Lx, s.Ly, s.PartPotentialBoxes, p, s.PartPotentialTable);
+        // printf("%f\n", InteractWithBoxPotential<Particle, true>(i, p[i].x, p[i].y, BoxXPart, BoxYPart, s.Lx, s.Ly, s.PartPotentialBoxes, p, s.PartPotentialTable));
     }
-
     return retPin + retPart / 2.0;
 }
 
@@ -222,26 +222,26 @@ void Force(const double &x, const double &y, const size_t &i, const double &t, c
     fyO = (damp * fy - beta * fx) / (beta * beta + damp * damp);
 }
 
-void Boundary(Simulator &s)
+void Boundary(Particle *parts, size_t nParticles, double Lx, double Ly)
 {
-    for (size_t i = 0; i < s.nParticles; ++i)
+    for (size_t i = 0; i < nParticles; ++i)
     {
-        if (s.parts1[i].x > s.Lx)
+        if (parts[i].x > Lx)
         {
-            s.parts1[i].x -= s.Lx;
+            parts[i].x -= Lx;
         }
-        else if (s.parts1[i].x < 0.0)
+        else if (parts[i].x < 0.0)
         {
-            s.parts1[i].x += s.Lx;
+            parts[i].x += Lx;
         }
 
-        if (s.parts1[i].y > s.Ly)
+        if (parts[i].y > Ly)
         {
-            s.parts1[i].y -= s.Ly;
+            parts[i].y -= Ly;
         }
-        else if (s.parts1[i].y < 0.0)
+        else if (parts[i].y < 0.0)
         {
-            s.parts1[i].y += s.Ly;
+            parts[i].y += Ly;
         }
     }
 }
@@ -350,7 +350,7 @@ void IntegrationMult(Simulator &s, const char *prefixSave, const char *suffixSav
         {
             Att(ip, t, s);
         }
-        Boundary(s);
+        Boundary(s.parts1, s.nParticles, s.Lx, s.Ly);
         Reset(s);
         AttWrite(s, i);
         // if (i % s.NCut == 0) { printf("%.2f\n", (double)i / (double)s.N * 100.0); }
@@ -393,7 +393,7 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
         {
             Att(ip, t, s);
         }
-        Boundary(s);
+        Boundary(s.parts1, s.nParticles, s.Lx, s.Ly);
         Reset(s);
         AttWrite(s, i);
         // if (i % s.NCut == 0) { printf("%.2f\n", (double)i / (double)s.N * 100.0); }
