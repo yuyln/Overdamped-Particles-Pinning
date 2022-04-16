@@ -27,19 +27,9 @@ public:
     const double &dirY() const noexcept { return Vy; }
     void operator=(const LineSegment &o)
     {
-        // Vx = o.Vx;
-        // Vy = o.Vy;
-        // p0.x = o.p0.X();
-        // p0.y = o.p0.Y();
-        // p1.x = o.p1.X();
-        // p1.y = o.p1.Y();
-        // U0 = o.U0;
-        // R = o.R;
-        // R2 = o.R2;
-        // F0 = o.F0;
         memcpy((void*)this, (void*)&o, sizeof(LineSegment));
     }
-    Point operator()(const double &t) noexcept
+    Point operator()(const double &t) const noexcept
     {
         if (t >= 1.0)
         {
@@ -55,7 +45,7 @@ public:
         }
     }
 
-    Vector DistanceVector(const double &x, const double &y)
+    Vector DistanceVector(const double &x, const double &y) const noexcept
     {
         double t = Vy * p0.Y() - Vy * y + Vx * p0.X() - Vx * x;
         t /= (Vy * Vy + Vx * Vx);
@@ -63,7 +53,7 @@ public:
         return Vector(x - ponL.X(), y - ponL.Y());
     }
 
-    double Distance(const double &x, const double &y)
+    double Distance(const double &x, const double &y) const noexcept
     {
         Vector v = DistanceVector(x, y);
         return sqrt(v.X() * v.X() + v.Y() * v.Y());

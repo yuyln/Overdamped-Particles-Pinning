@@ -4,6 +4,7 @@
 #include <point.h>
 #include <cstring>
 #include <functions.h>
+#include <line.h>
 class Rectangle
 {
     Point left_below;
@@ -22,10 +23,21 @@ public:
                                                            x < (left_below.X() + w) &&
                                                            y > left_below.Y() &&
                                                            y < (left_below.Y() + h); }
-    // Point ClosestPoint(const double &x, const double &y) const noexcept
-    // {
-    //     return Point(0.0, 0.0);
-    // }
+    Point ClosestPoint(const double &x, const double &y) const noexcept
+    {
+        double dleft2 = (x - left_below.X()) * (x - left_below.X());
+        double dright2 = (x - (left_below.X() + w)) * (x - (left_below.X() + w));
+        double ddown2 = (y - left_below.Y()) * (y - left_below.Y());
+        double dup2 = (y - (left_below.Y() + h)) * (y - (left_below.Y() + h));
+        Point r(0.0, 0.0);
+        if (dleft2 < dright2) { r.x = sqrt(dleft2); }
+        else { r.x = sqrt(dright2); }
+
+        if (dup2 < ddown2) { r.y = sqrt(dup2); }
+        else { r.y = sqrt(ddown2); }
+
+        return r;
+    }
 };
 
 class Circle
@@ -43,18 +55,21 @@ public:
                                                                            (y - center.Y()) * (y - center.Y())) < 
                                                                            (r * r); }
 
-    // Point ClosestPoint(const double &x, const double &y) const noexcept
-    // {
-    //     return Point(center.X(), center.Y());
-    // }
+    Point ClosestPoint(const double &x, const double &y) const noexcept
+    {
+        Vector d(x - center.X(), y - center.Y());
+        double D = sqrt(d.X() * d.X() + d.Y() * d.Y());
+        return Point(center.X() + d.X() / D * r, center.Y() + d.Y() / D * r);
+    }
 };
 
 class Triangule
 {
     Point p1, p2, p3;
+    LineSegment l12, l13, l23;
 public:
     Triangule() {}
-    Triangule(Point _1, Point _2, Point _3): p1(_1), p2(_2), p3(_3) {}
+    Triangule(Point _1, Point _2, Point _3): p1(_1), p2(_2), p3(_3), l12(p1, p2, 0.0, 0.0), l13(p1, p3, 0.0, 0.0), l23(p2, p3, 0.0, 0.0) {}
     const Point &P1() const noexcept { return p1; }
     const Point &P2() const noexcept { return p2; }
     const Point &P3() const noexcept { return p3; }
@@ -67,6 +82,32 @@ public:
             ((p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y));
         double gamma = 1.0 - alpha - beta;
         return alpha > 0.0 && beta > 0.0 && gamma > 0.0;
+    }
+
+    Point ClosestPoint(const double &x, const double &y) const noexcept
+    {
+        Vector dl[3] = {l12.DistanceVector(x, y), l13.DistanceVector(x, y), l23.DistanceVector(x, y)};
+        double dl_[3] = {dl[0].X() * dl[0].X() + dl[0].Y() + dl[0].Y(), 
+                         dl[1].X() * dl[1].X() + dl[1].Y() + dl[1].Y(),
+                         dl[2].X() * dl[2].X() + dl[2].Y() + dl[2].Y()};
+        // Vector dl12 = l12.DistanceVector(x, y);
+        // Vector dl13 = l13.DistanceVector(x, y);
+        // Vector dl23 = l23.DistanceVector(x, y);
+        // double dl12_ = dl12.X() * dl12.X() + dl12.Y() + dl12.Y();
+        // double dl13_ = dl13.X() * dl13.X() + dl13.Y() + dl13.Y();
+        // double dl23_ = dl23.X() * dl23.X() + dl23.Y() + dl23.Y();
+
+        double md = dl_[0];
+        Vector mdv = dl[0];
+        for (size_t i = 1; i < 3; ++i)
+        {
+            if (dl_[i] <= md)
+            {
+                md = dl_[i];
+                mdv = dl[i];
+            } 
+        }
+        return mdv;
     }
 
 };
