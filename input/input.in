@@ -17,5 +17,7 @@ Number of Oscilation in Y NACY: 10.0
 Temperature TEMP: 0.0
 Cut Factor NCut: 5
 Number of Threads, note `not always it will make the code go faster` NTHREADS: 1
+GSA Threads GSATHREADS: 2
+Repeat GSA parameters RGSA: 2
 Write to File WRITE: 1
 Recovery Mode RECOVERY: 0

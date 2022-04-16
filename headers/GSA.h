@@ -11,7 +11,7 @@ public:
     size_t outerLoop, innerLoop, printParam;
 };
 
-void ReadGSAParams(GSAParams **gsap)
+int ReadGSAParams(GSAParams **gsap)
 {
     int nfiles;
     int *qnt;
@@ -34,11 +34,12 @@ void ReadGSAParams(GSAParams **gsap)
         (*gsap)[i].T0 = T0;
         (*gsap)[i].outerLoop = outer;
         (*gsap)[i].innerLoop = inner;
-        (*gsap)[i].printParam = inner / print;            
+        (*gsap)[i].printParam = inner / print;
     }
+    return nfiles;
 }
 
-void GSA(const GSAParams &param, Simulator &s)
+Particle* GSA(const GSAParams &param, Simulator &s, double *outEnergy)
 {
     double qA1, qT1, qV1, OneqA1, coef, coef1, r, pqa, df, tmp, exp1, exp2;
     Particle *pmin = new Particle[s.nParticles];
@@ -68,7 +69,7 @@ void GSA(const GSAParams &param, Simulator &s)
     {
         t = 0.0;
         srand((unsigned)time(NULL));
-        for (size_t ic = 0; ic <= param.innerLoop; ++ic)
+        for (size_t ic = 1; ic <= param.innerLoop; ++ic)
         {
             t = t + 1.0;
             if (ic % param.printParam == 0) { printf("Inner: %zu  Outer: %zu   Minimun: %.15f\n", ic, i, funcmin); }
@@ -89,7 +90,7 @@ void GSA(const GSAParams &param, Simulator &s)
                 if(S <= 0.5){delta = -delta;}
                 s.parts1[ip].y = s.parts[ip].y + delta;
             }
-            Boundary(s);
+            Boundary(s.parts1, s.nParticles, s.Lx, s.Ly);
             AttBoxes(s.nParticles, s.parts1, &s.PartPotentialBoxes);
             func1 = Potential(s, s.parts1);
 
@@ -120,7 +121,7 @@ void GSA(const GSAParams &param, Simulator &s)
     }
     memcpy(s.parts, pmin, sizeof(Particle) * s.nParticles);
     memcpy(s.parts1, pmin, sizeof(Particle) * s.nParticles);
-    delete[] pmin;
+    // delete[] pmin;
 
     FILE *f = fopen("./out/GSAParticles.out", "wb");
     if (f == NULL)
@@ -135,7 +136,8 @@ void GSA(const GSAParams &param, Simulator &s)
     size_t i = s.nParticles - 1;
     fprintf(f, "%.15f\t%.15f", s.parts[i].x, s.parts[i].y);
     fclose(f);
-
+    *outEnergy = funcmin;
+    return pmin;
 }
 
 #endif

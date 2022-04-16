@@ -46,12 +46,12 @@ typedef struct Simulator
     double sqrtTemp, Lx, Ly;
     size_t nParticles;
     double h, tmax;
-    size_t N, NCut, NThreads;
+    size_t N, NCut, NThreads, nGSAT, rGSAP;
     double *WriteX, *WriteY;
     bool Write;
     bool Recovery;
 
-    Simulator(bool CreateFoldersEtc)
+    Simulator(bool CreateFoldersEtc=false)
     {
         nParticles = InitParticles(&parts);
         InitParticles(&parts1);
@@ -72,11 +72,13 @@ typedef struct Simulator
         fclose(f);
         int nData;
         char **d = Parse(data, &nData);
-        N = (size_t)GetValueInt("N", d, nData);
-        NThreads = (size_t)GetValueInt("NTHREADS", d, nData);
-        NCut = (size_t)GetValueInt("NCut", d, nData);
-        Write = (bool)GetValueInt("WRITE", d, nData);
-        Recovery = (bool)GetValueInt("RECOVERY", d, nData);
+        N = (size_t)GetValueUInt("N", d, nData);
+        NThreads = (size_t)GetValueUInt("NTHREADS", d, nData);
+        nGSAT = (size_t)GetValueUInt("GSATHREADS", d, nData);
+        rGSAP = (size_t)GetValueUInt("RGSA", d, nData);
+        NCut = (size_t)GetValueUInt("NCut", d, nData);
+        Write = (bool)GetValueUInt("WRITE", d, nData);
+        Recovery = (bool)GetValueUInt("RECOVERY", d, nData);
         WriteX = new double[N * nParticles * Write / NCut];
         WriteY = new double[N * nParticles * Write / NCut];
 
