@@ -8,6 +8,7 @@
 #include <pinning.h>
 #include <functions.h>
 #include <map>
+#include <region.h>
 
 typedef struct Simulator
 {
@@ -21,6 +22,10 @@ typedef struct Simulator
     Particle *parts1;
     std::map<double, size_t> betaQnt;
     std::map<double, double> VmxBeta, VmyBeta;
+    Triangule *triang;
+    Rectangle *rect;
+    Circle *circ;
+    size_t ntri, nrec, ncir;
 
     double VXm, VYm;
 
@@ -137,6 +142,10 @@ typedef struct Simulator
 
         AttBoxes(nPinnings, pins, &PinPotentialBoxes);
         AttBoxes(nPinnings, pins, &PinForceBoxes);
+
+        nrec = (size_t)ReadRectangles(&rect);
+        ncir = (size_t)ReadCircles(&circ);
+        ntri = (size_t)ReadTriangules(&triang);
 
         if (CreateFoldersEtc)
         {
