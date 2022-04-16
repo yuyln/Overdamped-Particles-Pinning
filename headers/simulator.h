@@ -1,6 +1,7 @@
 #ifndef __SIM
 #define __SIM
 
+#include <region.h>
 #include <matrix.h>
 #include <box.h>
 #include <table.h>
@@ -8,7 +9,6 @@
 #include <functions.h>
 #include <map>
 #include <line.h>
-#include <region.h>
 
 typedef struct Simulator
 {
@@ -22,6 +22,7 @@ typedef struct Simulator
     LineSegment *lines;
     std::map<double, size_t> betaQnt;
     std::map<double, double> VmxBeta, VmyBeta;
+    Triangule CC;
 
 
     double VXm, VYm;
@@ -65,6 +66,7 @@ typedef struct Simulator
             betaQnt[parts[i].betadamp]++;
         }
 
+        CC = Triangule(Point(18.0, 18.0), Point(19.0, 18.0), Point(18.0, 19.0));
         FILE *f = fopen("./input/input.in", "rb");
         char *data = ReadFile(f);
         fclose(f);
@@ -331,6 +333,7 @@ typedef struct Simulator
                 {
                     p += LineSegment::Potential(&lines[i], x, y, PinPotentialTable);
                 }
+                p += CC.Inside(x, y) * 100000.0;
                 fprintf(f, "%f\t%f\t%.15f\n", x, y, p);
             }
         }
