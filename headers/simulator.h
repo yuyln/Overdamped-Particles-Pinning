@@ -9,6 +9,7 @@
 #include <functions.h>
 #include <map>
 #include <line.h>
+#include <region.h>
 
 typedef struct Simulator
 {
@@ -22,7 +23,10 @@ typedef struct Simulator
     LineSegment *lines;
     std::map<double, size_t> betaQnt;
     std::map<double, double> VmxBeta, VmyBeta;
-    Triangule CC;
+    Triangule *triang;
+    Rectangle *rect;
+    Circle *circ;
+    size_t ntri, nrec, ncir;
 
 
     double VXm, VYm;
@@ -66,7 +70,6 @@ typedef struct Simulator
             betaQnt[parts[i].betadamp]++;
         }
 
-        CC = Triangule(Point(18.0, 18.0), Point(19.0, 18.0), Point(18.0, 19.0));
         FILE *f = fopen("./input/input.in", "rb");
         char *data = ReadFile(f);
         fclose(f);
@@ -124,6 +127,10 @@ typedef struct Simulator
 
         PartPotentialBoxes = CreateBoxes(PartPotentialTable.getMaxRange(), nParticles, Lx, Ly, parts);
         PartForceBoxes = CreateBoxes(PartForceTable.getMaxRange(), nParticles, Lx, Ly, parts);
+
+        nrec = (size_t)ReadRectangles(&rect);
+        ncir = (size_t)ReadCircles(&circ);
+        ntri = (size_t)ReadTriangules(&triang);
 
         if (CreateFoldersEtc)
         {
@@ -335,7 +342,19 @@ typedef struct Simulator
                 {
                     p += LineSegment::Potential(&lines[i], x, y, PinPotentialTable);
                 }
-                p += CC.Inside(x, y) * 100000.0;
+                for (size_t i = 0; i < ncir; ++i)
+                {
+                    p += circ[i].Inside(x, y) * 10000;
+                }
+                for (size_t i = 0; i < ntri; ++i)
+                {
+                    p += triang[i].Inside(x, y) * 10000;
+                }
+                for (size_t i = 0; i < nrec; ++i)
+                {
+                    p += rect[i].Inside(x, y) * 10000;
+                }
+
                 fprintf(f, "%f\t%f\t%.15f\n", x, y, p);
             }
         }
