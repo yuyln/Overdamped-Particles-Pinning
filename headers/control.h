@@ -125,6 +125,14 @@ double Potential(const Simulator &s, const Particle *p)
     for (size_t i = 0; i < s.nParticles; ++i)
     {
 
+        for (size_t II = 0; II < s.nrec; ++II)
+        {
+            if (s.rect[II].Inside(p[i].x, p[i].y))
+            {
+                return 1.0e10;
+            }
+        }
+
         for (int II = -1; II <= 1; ++II)
         {
             for (int JJ = -1; JJ <= 1; ++JJ)
