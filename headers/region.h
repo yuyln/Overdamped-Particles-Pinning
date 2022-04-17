@@ -9,11 +9,24 @@ class Rectangle
 {
     Point left_below;
     double w, h;
+    LineSegment left, down, right, up;
 public:
 
     Rectangle() {}
-    Rectangle(Point l, double width, double heigth): left_below(l), w(width), h(heigth) {}
-    Rectangle(double x, double y, double width, double heigth): left_below(x, y), w(width), h(heigth) {}
+    Rectangle(Point l, double width, double heigth): 
+    left_below(l), w(width), h(heigth), 
+    left(l.X(), l.Y(), l.X(), l.Y() + heigth, 0.0, 0.0),
+    down(l.X(), l.Y(), l.X() + width, l.Y(), 0.0, 0.0),
+    right(l.X() + width, l.Y(), l.X() + width, l.Y() + heigth, 0.0, 0.0), 
+    up(l.X() + width, l.Y() + heigth, l.X(), l.Y() + heigth, 0.0, 0.0) {}
+
+    Rectangle(double x, double y, double width, double heigth): 
+    left_below(x, y), w(width), h(heigth),
+    left(x, y, x, y + heigth, 0.0, 0.0),
+    down(x, y, x + width, y, 0.0, 0.0),
+    right(x + width, y, x + width, y + heigth, 0.0, 0.0), 
+    up(x + width, y + heigth, x, y + heigth, 0.0, 0.0) {}
+
     const Point &LB() const noexcept { return left_below; }
     const double &W() const noexcept { return w; }
     const double &H() const noexcept { return h; }
@@ -25,18 +38,22 @@ public:
                                                            y < (left_below.Y() + h); }
     Point ClosestPoint(const double &x, const double &y) const noexcept
     {
-        double dleft2 = (x - left_below.X()) * (x - left_below.X());
-        double dright2 = (x - (left_below.X() + w)) * (x - (left_below.X() + w));
-        double ddown2 = (y - left_below.Y()) * (y - left_below.Y());
-        double dup2 = (y - (left_below.Y() + h)) * (y - (left_below.Y() + h));
-        Point r(0.0, 0.0);
-        if (dleft2 < dright2) { r.x = sqrt(dleft2); }
-        else { r.x = sqrt(dright2); }
-
-        if (dup2 < ddown2) { r.y = sqrt(dup2); }
-        else { r.y = sqrt(ddown2); }
-
-        return r;
+        Vector dl[4] = {left.DistanceVector(x, y), right.DistanceVector(x, y), up.DistanceVector(x, y), down.DistanceVector(x, y)};
+        double dl_[4] = {dl[0].X() * dl[0].X() + dl[0].Y() + dl[0].Y(), 
+                         dl[1].X() * dl[1].X() + dl[1].Y() + dl[1].Y(),
+                         dl[2].X() * dl[2].X() + dl[2].Y() + dl[2].Y(),
+                         dl[3].X() * dl[3].X() + dl[3].Y() + dl[3].Y()};
+        double md = dl_[0];
+        Vector mdv = dl[0];
+        for (size_t i = 1; i < 4; ++i)
+        {
+            if (dl_[i] <= md)
+            {
+                md = dl_[i];
+                mdv = dl[i];
+            } 
+        }
+        return Point(x - mdv.X(), y - mdv.Y());
     }
 };
 
@@ -90,12 +107,6 @@ public:
         double dl_[3] = {dl[0].X() * dl[0].X() + dl[0].Y() + dl[0].Y(), 
                          dl[1].X() * dl[1].X() + dl[1].Y() + dl[1].Y(),
                          dl[2].X() * dl[2].X() + dl[2].Y() + dl[2].Y()};
-        // Vector dl12 = l12.DistanceVector(x, y);
-        // Vector dl13 = l13.DistanceVector(x, y);
-        // Vector dl23 = l23.DistanceVector(x, y);
-        // double dl12_ = dl12.X() * dl12.X() + dl12.Y() + dl12.Y();
-        // double dl13_ = dl13.X() * dl13.X() + dl13.Y() + dl13.Y();
-        // double dl23_ = dl23.X() * dl23.X() + dl23.Y() + dl23.Y();
 
         double md = dl_[0];
         Vector mdv = dl[0];
@@ -107,7 +118,7 @@ public:
                 mdv = dl[i];
             } 
         }
-        return mdv;
+        return Point(x - mdv.X(), y - mdv.Y());
     }
 
 };
