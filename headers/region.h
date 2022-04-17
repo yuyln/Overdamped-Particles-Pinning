@@ -5,6 +5,7 @@
 #include <cstring>
 #include <functions.h>
 #include <line.h>
+
 class Rectangle
 {
     Point left_below;
@@ -30,6 +31,10 @@ public:
     const Point &LB() const noexcept { return left_below; }
     const double &W() const noexcept { return w; }
     const double &H() const noexcept { return h; }
+    const LineSegment &Left() const noexcept { return left; }
+    const LineSegment &Right() const noexcept { return right; }
+    const LineSegment &Up() const noexcept { return up; }
+    const LineSegment &Down() const noexcept { return down; }
     void operator=(const Rectangle &o) { memcpy((void*)this, (void*)&o, sizeof(Rectangle)); }
 
     bool Inside(const double &x, const double &y) const noexcept { return x > left_below.X() &&
@@ -39,10 +44,10 @@ public:
     Point ClosestPoint(const double &x, const double &y) const noexcept
     {
         Vector dl[4] = {left.DistanceVector(x, y), right.DistanceVector(x, y), up.DistanceVector(x, y), down.DistanceVector(x, y)};
-        double dl_[4] = {dl[0].X() * dl[0].X() + dl[0].Y() + dl[0].Y(), 
-                         dl[1].X() * dl[1].X() + dl[1].Y() + dl[1].Y(),
-                         dl[2].X() * dl[2].X() + dl[2].Y() + dl[2].Y(),
-                         dl[3].X() * dl[3].X() + dl[3].Y() + dl[3].Y()};
+        double dl_[4] = {dl[0].X() * dl[0].X() + dl[0].Y() * dl[0].Y(), 
+                         dl[1].X() * dl[1].X() + dl[1].Y() * dl[1].Y(),
+                         dl[2].X() * dl[2].X() + dl[2].Y() * dl[2].Y(),
+                         dl[3].X() * dl[3].X() + dl[3].Y() * dl[3].Y()};
         double md = dl_[0];
         Vector mdv = dl[0];
         for (size_t i = 1; i < 4; ++i)
@@ -90,6 +95,9 @@ public:
     const Point &P1() const noexcept { return p1; }
     const Point &P2() const noexcept { return p2; }
     const Point &P3() const noexcept { return p3; }
+    const LineSegment &L12() const noexcept { return l12; }
+    const LineSegment &L13() const noexcept { return l13; }
+    const LineSegment &L23() const noexcept { return l23; }
     void operator=(const Triangule &o) { memcpy((void*)this, (void*)&o, sizeof(Triangule)); }
     bool Inside(const double &x, const double &y)
     {
@@ -104,9 +112,9 @@ public:
     Point ClosestPoint(const double &x, const double &y) const noexcept
     {
         Vector dl[3] = {l12.DistanceVector(x, y), l13.DistanceVector(x, y), l23.DistanceVector(x, y)};
-        double dl_[3] = {dl[0].X() * dl[0].X() + dl[0].Y() + dl[0].Y(), 
-                         dl[1].X() * dl[1].X() + dl[1].Y() + dl[1].Y(),
-                         dl[2].X() * dl[2].X() + dl[2].Y() + dl[2].Y()};
+        double dl_[3] = {dl[0].X() * dl[0].X() + dl[0].Y() * dl[0].Y(), 
+                         dl[1].X() * dl[1].X() + dl[1].Y() * dl[1].Y(),
+                         dl[2].X() * dl[2].X() + dl[2].Y() * dl[2].Y()};
 
         double md = dl_[0];
         Vector mdv = dl[0];
