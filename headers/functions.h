@@ -213,9 +213,7 @@ int InitLines(LineSegment **l)
     return nL;
 }
 
-
-template <typename E>
-Matrix<Box> CreateBoxes(double range, size_t nPar, double Lx, double Ly, const E* const p)
+Matrix<Box> CreateBoxes(const double range, size_t nPar, double Lx, double Ly)
 {
     if (range > Lx || range > Ly)
     {
@@ -237,7 +235,6 @@ Matrix<Box> CreateBoxes(double range, size_t nPar, double Lx, double Ly, const E
             double y = ly * j;
             Box aux(lx, ly, x, y, nPar);
             out.SetData(&aux, j, i);
-            out(j, i).AttBox(p, nPar); //?
         }
     }
     return out;

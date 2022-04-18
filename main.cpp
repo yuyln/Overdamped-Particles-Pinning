@@ -36,7 +36,6 @@ int main()
     double *values = new double[nparams];
     Particle **p = new Particle*[nparams];
     Simulator *sims = new Simulator[nparams];
-
     printf("Before GSA: %.15f\n", Potential(s, s.parts));
 
     for (size_t I = 0; I < s.rGSAP; ++I)
