@@ -17,7 +17,7 @@
 #include <GSA.h>
 #include <omp.h>
 
-int main()
+int main2()
 {
     Simulator s(true);
     s.Export("./out/simulator_data.out");
@@ -93,5 +93,17 @@ int main()
     EndMeasure("ALL");
     PrintAll(stdout);
 
+    return 0;
+}
+
+int main()
+{
+    Simulator s(true);
+    printf("%zu\n", s.nlines);
+    s.Export("./out/simulator_data.out");
+    double x = 18.0, y = 18.0;
+    int xi = FindBox(x, s.LineForceBoxes(0, 0).GetLx(), s.LineForceBoxes.nCols);
+    int yi = FindBox(y, s.LineForceBoxes(0, 0).GetLy(), s.LineForceBoxes.nRows);
+    printf("%zu\n", s.LineForceBoxes(yi, xi).GetIn());
     return 0;
 }

@@ -133,6 +133,17 @@ double Potential(const Simulator &s, const Particle *p)
             }
         }
 
+        for (int II = -1; II <= 1; ++II)
+        {
+            for (int JJ = -1; JJ <= 1; ++JJ)
+            {
+                for (size_t j = 0; j < s.nlines; ++j)
+                {
+                    retPin += LineSegment::Potential(&s.lines[j], p[i].x + (double)II * s.Lx, p[i].y + (double)JJ * s.Ly, s.PinPotentialTable);
+                }
+            }
+        }
+
 
         int BoxXPart = FindBox(p[i].x, s.PartPotentialBoxes(0, 0).GetLx(), s.PartPotentialBoxes.nCols);
         int BoxYPart = FindBox(p[i].y, s.PartPotentialBoxes(0, 0).GetLy(), s.PartPotentialBoxes.nRows);
@@ -155,16 +166,18 @@ void Force(const double &x, const double &y, const size_t &i, const double &t, c
 
     InteractWithBox<Particle, true>(i, x, y, BoxXPart, BoxYPart, sim.Lx, sim.Ly, sim.PartForceBoxes, sim.parts, sim.PartForceTable, fxPart, fyPart);
 
-    int BoxXLine = FindBox(x, sim.LineForceBoxes(0, 0).GetLx(), sim.LineForceBoxes.nCols);
-    int BoxYLine = FindBox(y, sim.LineForceBoxes(0, 0).GetLy(), sim.LineForceBoxes.nRows);
-
-    for (size_t l = 0; l < sim.LineForceBoxes(BoxYLine, BoxXLine).GetIn(); ++l)
+    for (int II = -1; II <= 1; ++II)
     {
-        double fxi = 0.0, fyi = 0.0;
-        size_t ll = sim.LineForceBoxes(BoxYLine, BoxXLine).GetIndex(l);
-        LineSegment::Force(&sim.lines[ll], x, y, sim.PinForceTable, &fxi, &fyi);
-        fxPin += fxi;
-        fyPin += fyi;
+        for (int JJ = -1; JJ <= 1; ++JJ)
+        {
+            for (size_t O = 0; O < sim.nlines; ++O)
+            {
+                double fxl, fyl;
+                LineSegment::Force(&sim.lines[O], x + (double)II * sim.Lx, y + (double)JJ * sim.Ly, sim.PinForceTable, &fxl, &fyl);
+                fxPin += fxl;
+                fyPin += fyl;
+            }
+        }
     }
 
 

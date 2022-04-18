@@ -17,7 +17,6 @@ typedef struct Simulator
           PartPotentialTable, PartForceTable;
 
     Matrix<Box> PartPotentialBoxes, PartForceBoxes;
-    Matrix<Box> LinePotentialBoxes, LineForceBoxes;
     Particle *parts;
     Particle *parts1;
     size_t nlines;
@@ -112,134 +111,22 @@ typedef struct Simulator
         omegaX = /*tmax / */GetValueDouble("NACX", d, nData) / tmax;
         omegaY = /*tmax / */GetValueDouble("NACY", d, nData) / tmax;
 
-        double cut = 0.21e-3;
-
-        double range = FindRange(0.0001, cut, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return exp(-x); });
+        double range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return exp(-x); });
         PinPotentialTable = Table(1e6, 0.0, range, 1.0, 0.0, [](double x){ return exp(-x); });
 
-        range = FindRange(0.0001, cut, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return exp(-x); });
+        range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return exp(-x); });
         PinForceTable = Table(1e6, 0.0, range, 1.0, 0.0, [](double x){ return exp(-x); });
 
-        range = FindRange(0.0001, cut, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return BESSK0(x); });
+        range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return BESSK0(x); });
         PartPotentialTable = Table(1e6, 0.0001, range, BESSK0(0.0001), 0.0, [](double x){ return BESSK0(x); });
 
-        range = FindRange(0.0001, cut, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return BESSK1(x) / x; });
+        range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return BESSK1(x) / x; });
         PartForceTable = Table(1e6, 0.0001, range, BESSK1(0.0001) / 0.0001, 0.0, [](double x){ return BESSK1(x) / x; });
 
         FC = 0.0;
 
-        PartPotentialBoxes = CreateBoxes(PartPotentialTable.getMaxRange(), nParticles, Lx, Ly);
-        PartForceBoxes = CreateBoxes(PartForceTable.getMaxRange(), nParticles, Lx, Ly);
-        AttBoxes(nParticles, parts, &PartPotentialBoxes);
-        AttBoxes(nParticles, parts, &PartForceBoxes);
-
-        double R0Max = 0.0;
-        for (size_t i = 0; i < nlines; ++i)
-        {
-            if (lines[i].R >= R0Max)
-            {
-                R0Max = lines[i].R;
-            }
-        }
-        if (nlines == 0)
-        {
-            R0Max = 1.0;
-        }
-
-        LinePotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange()), 9 * nlines, Lx, Ly);
-        LineForceBoxes = CreateBoxes(R0Max * sqrt(PinForceTable.getMaxRange()), 9 * nlines, Lx, Ly);
-
-
-        LineSegment *aux = new LineSegment[nlines];
-        memcpy((void*)aux, (void*)lines, sizeof(LineSegment) * nlines);
-        lines = new LineSegment[3 * 3 * nlines];
-
-        size_t k = 0;
-        for (int ix = -1; ix <= 1; ++ix)
-        {
-            for (int iy = -1; iy <= 1; ++iy)
-            {
-                for (size_t i = 0; i < nlines; ++i)
-                {
-                    lines[k] = LineSegment(aux[i].p0.X() + (double)ix * Lx, aux[i].p0.Y() + (double)iy * Ly, 
-                                           aux[i].p1.X() + (double)ix * Lx, aux[i].p1.Y() + (double)iy * Ly, 
-                                           aux[i].R, aux[i].U0);
-                }
-                ++k;
-            }
-        }
-        delete[] aux;
-
-        for (size_t i = 0; i < LinePotentialBoxes.nRows; ++i)
-        {
-            for (size_t j = 0; j < LinePotentialBoxes.nCols; ++j)
-            {
-                LinePotentialBoxes(i, j).SetIn(0);
-            }
-        }
-
-        for (size_t i = 0; i < LinePotentialBoxes.nRows; ++i)
-        {
-            for (size_t j = 0; j < LinePotentialBoxes.nCols; ++j)
-            {
-                size_t l0 = 0;
-                for (double x = LinePotentialBoxes(i, j).GetX(); 
-                            x <= LinePotentialBoxes(i, j).GetX() + LinePotentialBoxes(i, j).GetLx();
-                            x += 0.01)
-                {
-                    for (double y = LinePotentialBoxes(i, j).GetY(); 
-                                y <= LinePotentialBoxes(i, j).GetY() + LinePotentialBoxes(i, j).GetLy();
-                                y += 0.01)
-                    {
-                        for (size_t l = l0; l < 9 * nlines; ++l)
-                        {
-                            if (LineSegment::Potential(&lines[l], x, y, PinPotentialTable) < cut)
-                            {
-                                continue;
-                            }
-                            l0 = l + 1;
-                            int inside = LinePotentialBoxes(i, j).GetIn();
-                            LinePotentialBoxes(i, j).SetIndex(inside, l);
-                            inside++;
-                            LinePotentialBoxes(i, j).SetIn(inside);
-                        }
-                    }
-                }
-            }
-        }
-
-        for (size_t i = 0; i < LineForceBoxes.nRows; ++i)
-        {
-            for (size_t j = 0; j < LineForceBoxes.nCols; ++j)
-            {
-                size_t l0 = 0;
-                for (double x = LineForceBoxes(i, j).GetX(); 
-                            x <= LineForceBoxes(i, j).GetX() + LineForceBoxes(i, j).GetLx();
-                            x += 0.01)
-                {
-                    for (double y = LineForceBoxes(i, j).GetY(); 
-                                y <= LineForceBoxes(i, j).GetY() + LineForceBoxes(i, j).GetLy();
-                                y += 0.01)
-                    {
-                        for (size_t l = l0; l < 9 * nlines; ++l)
-                        {
-                            double fx = 0.0, fy = 0.0;
-                            LineSegment::Force(&lines[l], x, y, PinForceTable, &fx, &fy);
-                            if (fx * fx + fy * fy < cut * cut)
-                            {
-                                continue;
-                            }
-                            l0 = l + 1;
-                            int inside = LineForceBoxes(i, j).GetIn();
-                            LineForceBoxes(i, j).SetIndex(inside, l);
-                            inside++;
-                            LineForceBoxes(i, j).SetIn(inside);
-                        }
-                    }
-                }
-            }
-        }
-
+        PartPotentialBoxes = CreateBoxes(PartPotentialTable.getMaxRange(), nParticles, Lx, Ly, parts);
+        PartForceBoxes = CreateBoxes(PartForceTable.getMaxRange(), nParticles, Lx, Ly, parts);
 
         nrec = (size_t)ReadRectangles(&rect);
         ncir = (size_t)ReadCircles(&circ);
