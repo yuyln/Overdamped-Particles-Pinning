@@ -432,9 +432,9 @@ typedef struct Simulator
             if (lines[i].p1.X() > x1) { x1 = lines[i].p1.X(); }
             if (lines[i].p1.Y() > y1) { y1 = lines[i].p1.Y(); }
         }
-        for (double x = x0; x < x1; x += 0.1)
+        for (double x = 0.0; x <= Lx; x += 0.1)
         {
-            for (double y = y0; y < y1; y += 0.1)
+            for (double y = 0.0; y <= Ly; y += 0.1)
             {
                 double p = 0.0;
                 for (size_t i = 0; i < nlines; ++i)

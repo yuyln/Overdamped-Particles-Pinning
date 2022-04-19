@@ -46,25 +46,30 @@ int main()
             p[i] = GSA(gsap[i], sims[i], &values[i]);
         }
 
+        size_t minI = 0;
         double min = values[0];
         for (int i = 0; i < nparams; ++i)
         {
             if (values[i] <= min)
             {
                 min = values[i];
-
-                memcpy(sims[i].parts, p[i], sims[i].nParticles * sizeof(Particle));
-                memcpy(sims[i].parts1, p[i], sims[i].nParticles * sizeof(Particle));
-                AttBoxes(sims[i].nParticles, sims[i].parts, &sims[i].PartForceBoxes);
-                AttBoxes(sims[i].nParticles, sims[i].parts, &sims[i].PartPotentialBoxes);
-
-                memcpy(s.parts, p[i], s.nParticles * sizeof(Particle));
-                memcpy(s.parts1, p[i], s.nParticles * sizeof(Particle));
-                AttBoxes(s.nParticles, s.parts, &s.PartForceBoxes);
-                AttBoxes(s.nParticles, s.parts, &s.PartPotentialBoxes);
-
+                minI = i;
             }
         }
+
+        for (int i = 0; i < nparams; ++i)
+        {
+            memcpy(sims[i].parts, p[minI], sims[i].nParticles * sizeof(Particle));
+            memcpy(sims[i].parts1, p[minI], sims[i].nParticles * sizeof(Particle));
+            AttBoxes(sims[i].nParticles, sims[i].parts, &sims[i].PartForceBoxes);
+            AttBoxes(sims[i].nParticles, sims[i].parts, &sims[i].PartPotentialBoxes);
+
+            memcpy(s.parts, p[minI], s.nParticles * sizeof(Particle));
+            memcpy(s.parts1, p[minI], s.nParticles * sizeof(Particle));
+            AttBoxes(s.nParticles, s.parts, &s.PartForceBoxes);
+            AttBoxes(s.nParticles, s.parts, &s.PartPotentialBoxes);
+        }
+
     }
     delete[] sims;
     delete[] p;
