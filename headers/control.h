@@ -133,15 +133,13 @@ double Potential(const Simulator &s, const Particle *p)
             }
         }
 
-        for (int II = -1; II <= 1; ++II)
+        int BoxXLine = FindBox(p[i].x, s.LinePotentialBoxes(0, 0).GetLx(), s.LinePotentialBoxes.nCols);
+        int BoxYLine = FindBox(p[i].y, s.LinePotentialBoxes(0, 0).GetLy(), s.LinePotentialBoxes.nRows);
+
+        for (size_t l = 0; l < s.LinePotentialBoxes(BoxYLine, BoxXLine).GetIn(); ++l)
         {
-            for (int JJ = -1; JJ <= 1; ++JJ)
-            {
-                for (size_t j = 0; j < s.nlines; ++j)
-                {
-                    retPin += LineSegment::Potential(&s.lines[j], p[i].x + (double)II * s.Lx, p[i].y + (double)JJ * s.Ly, s.PinPotentialTable);
-                }
-            }
+            size_t ll = s.LinePotentialBoxes(BoxYLine, BoxXLine).GetIndex(l);
+            retPin += LineSegment::Potential(&s.lines[ll], p[i].x, p[i].y, s.PinPotentialTable);
         }
 
 
@@ -166,18 +164,15 @@ void Force(const double &x, const double &y, const size_t &i, const double &t, c
 
     InteractWithBox<Particle, true>(i, x, y, BoxXPart, BoxYPart, sim.Lx, sim.Ly, sim.PartForceBoxes, sim.parts, sim.PartForceTable, fxPart, fyPart);
 
-    for (int II = -1; II <= 1; ++II)
+    int BoxXLine = FindBox(x, sim.LineForceBoxes(0, 0).GetLx(), sim.LineForceBoxes.nCols);
+    int BoxYLine = FindBox(y, sim.LineForceBoxes(0, 0).GetLy(), sim.LineForceBoxes.nRows);
+    for (size_t l = 0; l < sim.LineForceBoxes(BoxYLine, BoxXLine).GetIn(); ++l)
     {
-        for (int JJ = -1; JJ <= 1; ++JJ)
-        {
-            for (size_t O = 0; O < sim.nlines; ++O)
-            {
-                double fxl, fyl;
-                LineSegment::Force(&sim.lines[O], x + (double)II * sim.Lx, y + (double)JJ * sim.Ly, sim.PinForceTable, &fxl, &fyl);
-                fxPin += fxl;
-                fyPin += fyl;
-            }
-        }
+        double fxi = 0.0, fyi = 0.0;
+        size_t ll = sim.LineForceBoxes(BoxYLine, BoxXLine).GetIndex(l);
+        LineSegment::Force(&sim.lines[ll], x, y, sim.PinForceTable, &fxi, &fyi);
+        fxPin += fxi;
+        fyPin += fyi;
     }
 
 
@@ -189,9 +184,6 @@ void Force(const double &x, const double &y, const size_t &i, const double &t, c
 
     fx += (sim.A + sim.A_F) * sin(2.0 * pi * sim.omegaX * t);
     fy += (sim.B + sim.B_F) * cos(2.0 * pi * sim.omegaY * t);
-    // if (sim.A > 0.0 || sim.B > 0.0){ printf("%f %f %f\n", (sim.A + sim.A_F) * sin(2.0 * pi * sim.omegaX * t), 
-    //                                                       sin(2.0 * pi * sim.omegaX * t), 
-    //                                                       2.0 * pi * sim.omegaX * t); }
 
     fx += (2.0 * myrandom() - 1.0) * sim.sqrtTemp;
     fy += (2.0 * myrandom() - 1.0) * sim.sqrtTemp;
