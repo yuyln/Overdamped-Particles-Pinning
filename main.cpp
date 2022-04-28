@@ -9,7 +9,6 @@
 #include <table.h>
 #include <besselfunc.h>
 #include <particle.h>
-#include <pinning.h>
 #include <functions.h>
 #include <box.h>
 #include <matrix.h>
@@ -37,10 +36,9 @@ int main()
     double *values = new double[nparams];
     Particle **p = new Particle*[nparams];
     Simulator *sims = new Simulator[nparams];
-
     printf("Before GSA: %.15f\n", Potential(s, s.parts));
 
-    for (size_t I = 0; I < s.rGSAP; ++I)
+    for (size_t I = 0; I < s.rGSAP * (s.Recovery == 0); ++I)
     {
         #pragma omp parallel for num_threads(s.nGSAT)
         for(int i = 0; i < nparams; ++i)
@@ -48,25 +46,45 @@ int main()
             p[i] = GSA(gsap[i], sims[i], &values[i]);
         }
 
+        size_t minI = 0;
         double min = values[0];
         for (int i = 0; i < nparams; ++i)
         {
             if (values[i] <= min)
             {
                 min = values[i];
-
-                memcpy(sims[i].parts, p[i], sims[i].nParticles * sizeof(Particle));
-                memcpy(sims[i].parts1, p[i], sims[i].nParticles * sizeof(Particle));
-                AttBoxes(sims[i].nParticles, sims[i].parts, &sims[i].PartForceBoxes);
-                AttBoxes(sims[i].nParticles, sims[i].parts, &sims[i].PartPotentialBoxes);
-
-                memcpy(s.parts, p[i], s.nParticles * sizeof(Particle));
-                memcpy(s.parts1, p[i], s.nParticles * sizeof(Particle));
-                AttBoxes(s.nParticles, s.parts, &s.PartForceBoxes);
-                AttBoxes(s.nParticles, s.parts, &s.PartPotentialBoxes);
-
+                minI = i;
             }
         }
+
+        for (int i = 0; i < nparams; ++i)
+        {
+            memcpy(sims[i].parts, p[minI], sims[i].nParticles * sizeof(Particle));
+            memcpy(sims[i].parts1, p[minI], sims[i].nParticles * sizeof(Particle));
+            AttBoxes(sims[i].nParticles, sims[i].parts, &sims[i].PartForceBoxes);
+            AttBoxes(sims[i].nParticles, sims[i].parts, &sims[i].PartPotentialBoxes);
+
+            memcpy(s.parts, p[minI], s.nParticles * sizeof(Particle));
+            memcpy(s.parts1, p[minI], s.nParticles * sizeof(Particle));
+            AttBoxes(s.nParticles, s.parts, &s.PartForceBoxes);
+            AttBoxes(s.nParticles, s.parts, &s.PartPotentialBoxes);
+        }
+
+        FILE *f = fopen("./out/GSAParticles.out", "wb");
+        if (f == NULL)
+        {
+            fprintf(stderr, "NOT POSSIBLE: %s\n", strerror(errno));
+            exit(1);
+        }
+        for (size_t i = 0; i < s.nParticles - 1; ++i)
+        {
+            fprintf(f, "%.15f\t%.15f\n", s.parts[i].x, s.parts[i].y);
+        }
+        size_t i = s.nParticles - 1;
+        fprintf(f, "%.15f\t%.15f", s.parts[i].x, s.parts[i].y);
+        fclose(f);
+
+
     }
     delete[] sims;
     delete[] p;
