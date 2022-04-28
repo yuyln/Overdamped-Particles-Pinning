@@ -38,7 +38,7 @@ int main()
     Simulator *sims = new Simulator[nparams];
     printf("Before GSA: %.15f\n", Potential(s, s.parts));
 
-    for (size_t I = 0; I < s.rGSAP; ++I)
+    for (size_t I = 0; I < s.rGSAP * (s.Recovery == 0); ++I)
     {
         #pragma omp parallel for num_threads(s.nGSAT)
         for(int i = 0; i < nparams; ++i)
@@ -69,6 +69,21 @@ int main()
             AttBoxes(s.nParticles, s.parts, &s.PartForceBoxes);
             AttBoxes(s.nParticles, s.parts, &s.PartPotentialBoxes);
         }
+
+        FILE *f = fopen("./out/GSAParticles.out", "wb");
+        if (f == NULL)
+        {
+            fprintf(stderr, "NOT POSSIBLE: %s\n", strerror(errno));
+            exit(1);
+        }
+        for (size_t i = 0; i < s.nParticles - 1; ++i)
+        {
+            fprintf(f, "%.15f\t%.15f\n", s.parts[i].x, s.parts[i].y);
+        }
+        size_t i = s.nParticles - 1;
+        fprintf(f, "%.15f\t%.15f", s.parts[i].x, s.parts[i].y);
+        fclose(f);
+
 
     }
     delete[] sims;

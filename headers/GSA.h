@@ -122,20 +122,6 @@ Particle* GSA(const GSAParams &param, Simulator &s, double *outEnergy)
     memcpy(s.parts, pmin, sizeof(Particle) * s.nParticles);
     memcpy(s.parts1, pmin, sizeof(Particle) * s.nParticles);
     // delete[] pmin;
-
-    FILE *f = fopen("./out/GSAParticles.out", "wb");
-    if (f == NULL)
-    {
-        fprintf(stderr, "NOT POSSIBLE: %s\n", strerror(errno));
-        exit(1);
-    }
-    for (size_t i = 0; i < s.nParticles - 1; ++i)
-    {
-        fprintf(f, "%.15f\t%.15f\n", s.parts[i].x, s.parts[i].y);
-    }
-    size_t i = s.nParticles - 1;
-    fprintf(f, "%.15f\t%.15f", s.parts[i].x, s.parts[i].y);
-    fclose(f);
     *outEnergy = funcmin;
     return pmin;
 }

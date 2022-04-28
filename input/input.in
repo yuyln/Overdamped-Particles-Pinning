@@ -18,6 +18,6 @@ Temperature TEMP: 0.0
 Cut Factor NCut: 5
 Number of Threads, note `not always it will make the code go faster` NTHREADS: 1
 GSA Threads GSATHREADS: 1
-Repeat GSA parameters RGSA: 0
+Repeat GSA parameters RGSA: 10
 Write to File WRITE: 1
 Recovery Mode RECOVERY: 0

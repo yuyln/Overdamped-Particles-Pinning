@@ -21,14 +21,46 @@ double FindRange(const double h, const double cutValue, const double start, cons
 
 class Table
 {
+public:
     double startValue, endValue;
     double *values, stepsize;
     double valueBelowStart, valueAfterEnd;
     size_t n;
 
-public:
     std::function<double(double)> f;
-    Table(){}
+    Table(): values(nullptr) {}
+
+    Table(const Table &o) = delete;
+/*    {
+        startValue = o.startValue; endValue = o.endValue;
+        stepsize = o.stepsize;
+        valueBelowStart = o.valueBelowStart;
+        valueAfterEnd = o.valueAfterEnd;
+        n = o.n;
+        if (values)
+            delete[] values;
+        values = new double[n + 1];
+        memcpy((void*)values, (void*)o.values, sizeof(double) * (n + 1));
+    }*/
+
+    void operator=(const Table &o)
+    {
+        startValue = o.startValue; endValue = o.endValue;
+        stepsize = o.stepsize;
+        valueBelowStart = o.valueBelowStart;
+        valueAfterEnd = o.valueAfterEnd;
+        n = o.n;
+        if (values)
+            delete[] values;
+        values = new double[n + 1];
+        memcpy((void*)values, (void*)o.values, sizeof(double) * (n + 1));
+    }
+
+    ~Table()
+    {
+        if (values)
+            delete[] values;
+    }
 
     Table(size_t n_, double start, double end,
     double valueBStart, double valueAEnd, std::function<double(double)> f_): 
@@ -63,18 +95,6 @@ public:
 
     const double &getMaxRange() const { return endValue; }
     const double &getStepSize() const { return stepsize; }
-
-    void operator=(Table l2)
-    {
-        startValue = l2.startValue;
-        endValue = l2.endValue;
-        values = l2.values;
-        stepsize = l2.stepsize;
-        valueBelowStart = l2.valueBelowStart;
-        valueAfterEnd = l2.valueAfterEnd;
-        n = l2.n;
-        f = l2.f;
-    }
 };
 
 #endif
