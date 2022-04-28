@@ -11,6 +11,23 @@
 #include <line.h>
 #include <region.h>
 
+int FindBox_(const double &p, const double &BoxSize, const size_t &nMax)
+{
+    int Box = p / BoxSize;
+
+    if (Box >= (int)nMax)
+    {
+        Box = 0;
+    }
+    else if (Box < 0)
+    {
+        Box = nMax - 1;
+    }
+    return Box;
+}
+
+
+
 typedef struct Simulator
 {
     Table PinPotentialTable, PinForceTable,
@@ -191,9 +208,9 @@ typedef struct Simulator
 
                 for (size_t l = 0; l < 9 * nlines; ++l)
                 {
-                    for (double x = LinePotentialBoxes(i, j).GetX(); x <= LinePotentialBoxes(i, j).GetX() + LinePotentialBoxes(i, j).GetLx(); x += 0.01)
+                    for (double x = LinePotentialBoxes(i, j).GetX(); x <= LinePotentialBoxes(i, j).GetX() + LinePotentialBoxes(i, j).GetLx(); x += LinePotentialBoxes(i, j).GetLx() / 10.0)
                     {
-                        for (double y = LinePotentialBoxes(i, j).GetY(); y <= LinePotentialBoxes(i, j).GetY() + LinePotentialBoxes(i, j).GetLy(); y += 0.01)
+                        for (double y = LinePotentialBoxes(i, j).GetY(); y <= LinePotentialBoxes(i, j).GetY() + LinePotentialBoxes(i, j).GetLy(); y += LinePotentialBoxes(i, j).GetLy() / 10.0)
                         {
                             if (LineSegment::Potential(&lines[l], x, y, PinPotentialTable) > cut)
                             {
@@ -219,9 +236,9 @@ typedef struct Simulator
 
                 for (size_t l = 0; l < 9 * nlines; ++l)
                 {
-                    for (double x = LineForceBoxes(i, j).GetX(); x <= LineForceBoxes(i, j).GetX() + LineForceBoxes(i, j).GetLx(); x += 0.01)
+                    for (double x = LineForceBoxes(i, j).GetX(); x <= LineForceBoxes(i, j).GetX() + LineForceBoxes(i, j).GetLx(); x += LineForceBoxes(i, j).GetLx() / 10.0)
                     {
-                        for (double y = LineForceBoxes(i, j).GetY(); y <= LineForceBoxes(i, j).GetY() + LineForceBoxes(i, j).GetLy(); y += 0.01)
+                        for (double y = LineForceBoxes(i, j).GetY(); y <= LineForceBoxes(i, j).GetY() + LineForceBoxes(i, j).GetLy(); y += LineForceBoxes(i, j).GetLy() / 10.0)
                         {
                             double fx = 0.0, fy = 0.0;
                             LineSegment::Force(&lines[l], x, y, PinForceTable, &fx, &fy);
@@ -414,6 +431,14 @@ typedef struct Simulator
         fprintf(f, "Pinning Boxes:\n");
         fprintf(f, "Potential Cutoff: %.6f\n", PinPotentialTable.getMaxRange());
         fprintf(f, "Force Cutoff: %.6f\n", PinForceTable.getMaxRange());
+        fprintf(f, "Size of Boxes in X for Lines Potential: %.6f\n", LinePotentialBoxes(0, 0).GetLx());
+        fprintf(f, "Size of Boxes in Y for Lines Potential: %.6f\n", LinePotentialBoxes(0, 0).GetLy());
+        fprintf(f, "Size of Boxes in X for Lines Force: %.6f\n", LineForceBoxes(0, 0).GetLx());
+        fprintf(f, "Size of Boxes in Y for Lines Force: %.6f\n", LineForceBoxes(0, 0).GetLy());
+        fprintf(f, "Number of Boxes in X for Lines Potential: %zu\n", LinePotentialBoxes.nCols);
+        fprintf(f, "Number of Boxes in Y for Lines Potential: %zu\n", LinePotentialBoxes.nRows);
+        fprintf(f, "Number of Boxes in X for Lines Force: %zu\n", LineForceBoxes.nCols);
+        fprintf(f, "Number of Boxes in Y for Lines Force: %zu\n", LineForceBoxes.nRows);
         fprintf(f, "---------------------------\n");
         fprintf(f, "Particle Boxes:\n");
         fprintf(f, "Potential Cutoff: %.6f\n", PartPotentialTable.getMaxRange());
@@ -447,15 +472,20 @@ typedef struct Simulator
             if (lines[i].p1.X() > x1) { x1 = lines[i].p1.X(); }
             if (lines[i].p1.Y() > y1) { y1 = lines[i].p1.Y(); }
         }
-        for (double x = 0.0; x <= Lx; x += 0.1)
+        for (double x = 0.0; x <= Lx + 0.1; x += 0.1)
         {
-            for (double y = 0.0; y <= Ly; y += 0.1)
+            for (double y = 0.0; y <= Ly + 0.1; y += 0.1)
             {
                 double p = 0.0;
-                for (size_t i = 0; i < nlines; ++i)
+                int BoxXLine = FindBox_(x, LinePotentialBoxes(0, 0).GetLx(), LinePotentialBoxes.nCols);
+                int BoxYLine = FindBox_(y, LinePotentialBoxes(0, 0).GetLy(), LinePotentialBoxes.nRows);
+
+                for (size_t l = 0; l < LinePotentialBoxes(BoxYLine, BoxXLine).GetIn(); ++l)
                 {
-                    p += LineSegment::Potential(&lines[i], x, y, PinPotentialTable);
+                    size_t ll = LinePotentialBoxes(BoxYLine, BoxXLine).GetIndex(l);
+                    p += LineSegment::Potential(&lines[ll], x, y, PinPotentialTable);
                 }
+
                 for (size_t i = 0; i < ncir; ++i)
                 {
                     p += circ[i].Inside(x, y) * 10000;
