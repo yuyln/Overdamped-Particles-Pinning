@@ -53,6 +53,21 @@ typedef struct Simulator
     bool Write;
     bool Recovery;
 
+    ~Simulator()
+    {
+        PartForceBoxes.ClearMatrix();
+        PartPotentialBoxes.ClearMatrix();
+        PinForceBoxes.ClearMatrix();
+        PinPotentialBoxes.ClearMatrix();
+
+        delete[] parts; delete[] parts1;
+        delete[] pins;
+        delete[] triang;
+        delete[] circ;
+        delete[] rect;
+        delete[] WriteX; delete[] WriteY;
+    }
+
     Simulator(bool CreateFoldersEtc=false)
     {
         nPinnings = InitPinnings(&pins);

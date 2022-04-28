@@ -2,13 +2,43 @@
 #define __BOX
 class Box
 {
-    double lx, ly, x, y;
-    size_t nIn;
-    size_t *indexes;
 public:
-    Box(){}
+    double lx, ly, x, y;
+    size_t nIn, npar;
+    size_t *indexes;
+    Box(): indexes(nullptr) {}
 
-    Box(double Lx, double Ly, double X, double Y, size_t nPar): lx(Lx), ly(Ly), x(X), y(Y)
+    Box(const Box &o) = delete;
+/*    {
+        if (indexes)
+            delete[] indexes;
+        
+        lx = o.lx; ly = o.ly;
+        x = o.x; y = o.y;
+        npar = o.npar;
+        indexes = new size_t[o.npar];
+        memcpy((void*)indexes, (void*)o.indexes, sizeof(size_t) * npar);
+    }*/
+
+    void operator=(const Box &o)
+    {
+        if (indexes)
+            delete[] indexes;
+        
+        lx = o.lx; ly = o.ly;
+        x = o.x; y = o.y;
+        npar = o.npar;
+        indexes = new size_t[o.npar];
+        memcpy((void*)indexes, (void*)o.indexes, sizeof(size_t) * npar);
+    }
+
+    ~Box()
+    {
+        if (indexes)
+            delete[] indexes;
+    }
+
+    Box(double Lx, double Ly, double X, double Y, size_t nPar): lx(Lx), ly(Ly), x(X), y(Y), npar(nPar)
     {
         indexes = new size_t[nPar];
     }
@@ -33,6 +63,8 @@ public:
     const size_t & GetIndex(const size_t &i) const noexcept { return indexes[i]; }
     const double & GetLx() const noexcept { return lx; }
     const double & GetLy() const noexcept { return ly; }
+    const double & GetX() const noexcept { return x; }
+    const double & GetY() const noexcept { return y; }
     void SetIn(size_t i) noexcept { nIn = i; }
     void SetIndex(size_t index, size_t value) { indexes[index] = value; }
 };
