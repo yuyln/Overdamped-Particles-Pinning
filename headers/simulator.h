@@ -35,6 +35,7 @@ typedef struct Simulator
 
     Matrix<Box> PartPotentialBoxes, PartForceBoxes;
     Matrix<Box> LinePotentialBoxes, LineForceBoxes;
+    Matrix<Box> TrianguleBoxes, RectangleBoxes, CircleBoxes;
     Particle *parts;
     Particle *parts1;
     size_t nlines;
@@ -79,6 +80,9 @@ typedef struct Simulator
         PartPotentialBoxes.ClearMatrix();
         LineForceBoxes.ClearMatrix();
         LinePotentialBoxes.ClearMatrix();
+        TrianguleBoxes.ClearMatrix();
+        CircleBoxes.ClearMatrix();
+        RectangleBoxes.ClearMatrix();
 
         delete[] parts; delete[] parts1;
         delete[] lines;
@@ -208,9 +212,9 @@ typedef struct Simulator
 
                 for (size_t l = 0; l < 9 * nlines; ++l)
                 {
-                    for (double x = LinePotentialBoxes(i, j).GetX(); x <= LinePotentialBoxes(i, j).GetX() + LinePotentialBoxes(i, j).GetLx(); x += LinePotentialBoxes(i, j).GetLx() / 10.0)
+                    for (double x = LinePotentialBoxes(i, j).GetX(); x <= LinePotentialBoxes(i, j).GetX() + LinePotentialBoxes(i, j).GetLx(); x += LinePotentialBoxes(i, j).GetLx() / 50.0)
                     {
-                        for (double y = LinePotentialBoxes(i, j).GetY(); y <= LinePotentialBoxes(i, j).GetY() + LinePotentialBoxes(i, j).GetLy(); y += LinePotentialBoxes(i, j).GetLy() / 10.0)
+                        for (double y = LinePotentialBoxes(i, j).GetY(); y <= LinePotentialBoxes(i, j).GetY() + LinePotentialBoxes(i, j).GetLy(); y += LinePotentialBoxes(i, j).GetLy() / 50.0)
                         {
                             if (LineSegment::Potential(&lines[l], x, y, PinPotentialTable) > cut)
                             {
@@ -236,9 +240,9 @@ typedef struct Simulator
 
                 for (size_t l = 0; l < 9 * nlines; ++l)
                 {
-                    for (double x = LineForceBoxes(i, j).GetX(); x <= LineForceBoxes(i, j).GetX() + LineForceBoxes(i, j).GetLx(); x += LineForceBoxes(i, j).GetLx() / 10.0)
+                    for (double x = LineForceBoxes(i, j).GetX(); x <= LineForceBoxes(i, j).GetX() + LineForceBoxes(i, j).GetLx(); x += LineForceBoxes(i, j).GetLx() / 50.0)
                     {
-                        for (double y = LineForceBoxes(i, j).GetY(); y <= LineForceBoxes(i, j).GetY() + LineForceBoxes(i, j).GetLy(); y += LineForceBoxes(i, j).GetLy() / 10.0)
+                        for (double y = LineForceBoxes(i, j).GetY(); y <= LineForceBoxes(i, j).GetY() + LineForceBoxes(i, j).GetLy(); y += LineForceBoxes(i, j).GetLy() / 50.0)
                         {
                             double fx = 0.0, fy = 0.0;
                             LineSegment::Force(&lines[l], x, y, PinForceTable, &fx, &fy);
@@ -262,6 +266,81 @@ typedef struct Simulator
         nrec = (size_t)ReadRectangles(&rect);
         ncir = (size_t)ReadCircles(&circ);
         ntri = (size_t)ReadTriangules(&triang);
+
+        double minp = Lx < Ly? Lx: Ly;
+
+        TrianguleBoxes = CreateBoxes(minp / 10.0, ntri, Lx, Ly);
+        CircleBoxes = CreateBoxes(minp / 10.0, ncir, Lx, Ly);
+        RectangleBoxes = CreateBoxes(minp / 10.0, nrec, Lx, Ly);
+
+        for (size_t i = 0; i < TrianguleBoxes.nRows; ++i)
+        {
+            for (size_t j = 0; j < TrianguleBoxes.nCols; ++j)
+            {
+                TrianguleBoxes(i, j).SetIn(0);
+                CircleBoxes(i, j).SetIn(0);
+                RectangleBoxes(i, j).SetIn(0);
+
+
+                Rectangle boxR(TrianguleBoxes(i, j).GetX(), TrianguleBoxes(i, j).GetY(), 
+                               TrianguleBoxes(i, j).GetLx(), TrianguleBoxes(i, j).GetLy());
+
+                for (size_t I = 0; I < nrec; ++I)
+                {
+                    if (boxR.Inside(rect[I].Left()(0.0).X(), rect[I].Left()(0.0).Y()) ||
+                        boxR.Inside(rect[I].Left()(1.0).X(), rect[I].Left()(1.0).Y()) ||
+                        boxR.Inside(rect[I].Right()(0.0).X(), rect[I].Right()(0.0).Y()) ||
+                        boxR.Inside(rect[I].Right()(1.0).X(), rect[I].Right()(1.0).Y()) ||
+                        boxR.Inside(rect[I].Up()(0.0).X(), rect[I].Up()(0.0).Y()) ||
+                        boxR.Inside(rect[I].Up()(1.0).X(), rect[I].Up()(1.0).Y()) ||
+                        boxR.Inside(rect[I].Down()(0.0).X(), rect[I].Down()(0.0).Y()) ||
+                        boxR.Inside(rect[I].Down()(1.0).X(), rect[I].Down()(1.0).Y()))
+                    {
+                        int inside = RectangleBoxes(i, j).GetIn();
+                        RectangleBoxes(i, j).SetIndex(inside, I);
+                        inside++;
+                        RectangleBoxes(i, j).SetIn(inside);
+                    }
+
+                }
+
+                for (size_t I = 0; I < ntri; ++I)
+                {
+                    if (boxR.Inside(triang[I].P1().X(), triang[I].P1().Y()) ||
+                        boxR.Inside(triang[I].P2().X(), triang[I].P2().Y()) ||
+                        boxR.Inside(triang[I].P3().X(), triang[I].P3().Y()))
+                    {
+                        int inside = TrianguleBoxes(i, j).GetIn();
+                        TrianguleBoxes(i, j).SetIndex(inside, I);
+                        inside++;
+                        TrianguleBoxes(i, j).SetIn(inside);
+                    }
+
+                }
+
+                for (size_t I = 0; I < ncir; ++I)
+                {
+                    for (double x = CircleBoxes(i, j).GetX(); x <= CircleBoxes(i, j).GetX() + CircleBoxes(i, j).GetLx(); x += CircleBoxes(i, j).GetLx() / 50.0)
+                    {
+                        for (double y = CircleBoxes(i, j).GetY(); y <= CircleBoxes(i, j).GetY() + CircleBoxes(i, j).GetLy(); y += CircleBoxes(i, j).GetLy() / 50.0)
+                        {
+                            if (circ[I].Inside(x, y))
+                            {
+                                int inside = CircleBoxes(i, j).GetIn();
+                                CircleBoxes(i, j).SetIndex(inside, I);
+                                inside++;
+                                CircleBoxes(i, j).SetIn(inside);
+                                goto inC;
+                            }
+                        }
+                    }
+                    inC:
+                    continue;
+
+                }
+
+            }
+        }
 
         if (CreateFoldersEtc)
         {
@@ -477,6 +556,7 @@ typedef struct Simulator
             for (double y = 0.0; y <= Ly + 0.1; y += 0.1)
             {
                 double p = 0.0;
+
                 int BoxXLine = FindBox_(x, LinePotentialBoxes(0, 0).GetLx(), LinePotentialBoxes.nCols);
                 int BoxYLine = FindBox_(y, LinePotentialBoxes(0, 0).GetLy(), LinePotentialBoxes.nRows);
 
@@ -486,17 +566,31 @@ typedef struct Simulator
                     p += LineSegment::Potential(&lines[ll], x, y, PinPotentialTable);
                 }
 
-                for (size_t i = 0; i < ncir; ++i)
+                int BoxXCirc = FindBox_(x, CircleBoxes(0, 0).GetLx(), CircleBoxes.nCols);
+                int BoxYCirc = FindBox_(y, CircleBoxes(0, 0).GetLy(), CircleBoxes.nRows);
+
+                for (size_t l = 0; l < CircleBoxes(BoxYCirc, BoxXCirc).GetIn(); ++l)
                 {
-                    p += circ[i].Inside(x, y) * 10000;
+                    size_t ll = CircleBoxes(BoxYCirc, BoxXCirc).GetIndex(l);
+                    p += circ[ll].Inside(x, y) * 10000.0;
                 }
-                for (size_t i = 0; i < ntri; ++i)
+
+                int BoxXTri = FindBox_(x, TrianguleBoxes(0, 0).GetLx(), TrianguleBoxes.nCols);
+                int BoxYTri = FindBox_(y, TrianguleBoxes(0, 0).GetLy(), TrianguleBoxes.nRows);
+
+                for (size_t l = 0; l < TrianguleBoxes(BoxYTri, BoxXTri).GetIn(); ++l)
                 {
-                    p += triang[i].Inside(x, y) * 10000;
+                    size_t ll = TrianguleBoxes(BoxYTri, BoxXTri).GetIndex(l);
+                    p += triang[ll].Inside(x, y) * 10000.0;
                 }
-                for (size_t i = 0; i < nrec; ++i)
+
+                int BoxXRec = FindBox_(x, RectangleBoxes(0, 0).GetLx(), RectangleBoxes.nCols);
+                int BoxYRec = FindBox_(y, RectangleBoxes(0, 0).GetLy(), RectangleBoxes.nRows);
+
+                for (size_t l = 0; l < RectangleBoxes(BoxYRec, BoxXRec).GetIn(); ++l)
                 {
-                    p += rect[i].Inside(x, y) * 10000;
+                    size_t ll = RectangleBoxes(BoxYRec, BoxXRec).GetIndex(l);
+                    p += rect[ll].Inside(x, y) * 10000.0;
                 }
 
                 fprintf(f, "%f\t%f\t%.15f\n", x, y, p);
