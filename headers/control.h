@@ -127,6 +127,33 @@ double Potential(const Simulator &s, const Particle *p)
         int BoxYPin = FindBox(p[i].y, s.PinPotentialBoxes(0, 0).GetLy(), s.PinPotentialBoxes.nRows);
 
         retPin += InteractWithBoxPotential<Pinning, false>(i, p[i].x, p[i].y, BoxXPin, BoxYPin, s.Lx, s.Ly, s.PinPotentialBoxes, s.pins, s.PinPotentialTable);
+
+        int BoxXCirc = FindBox(p[i].x, s.CircleBoxes(0, 0).GetLx(), s.CircleBoxes.nCols);
+        int BoxYCirc = FindBox(p[i].y, s.CircleBoxes(0, 0).GetLy(), s.CircleBoxes.nRows);
+
+        for (size_t l = 0; l < s.CircleBoxes(BoxYCirc, BoxXCirc).GetIn(); ++l)
+        {
+            size_t ll = s.CircleBoxes(BoxYCirc, BoxXCirc).GetIndex(l);
+            retPin += s.circ[ll].Inside(p[i].x, p[i].y) * 10000.0;
+        }
+
+        int BoxXTri = FindBox(p[i].x, s.TrianguleBoxes(0, 0).GetLx(), s.TrianguleBoxes.nCols);
+        int BoxYTri = FindBox(p[i].y, s.TrianguleBoxes(0, 0).GetLy(), s.TrianguleBoxes.nRows);
+
+        for (size_t l = 0; l < s.TrianguleBoxes(BoxYTri, BoxXTri).GetIn(); ++l)
+        {
+            size_t ll = s.TrianguleBoxes(BoxYTri, BoxXTri).GetIndex(l);
+            retPin += s.triang[ll].Inside(p[i].x, p[i].y) * 10000.0;
+        }
+
+        int BoxXRec = FindBox(p[i].x, s.RectangleBoxes(0, 0).GetLx(), s.RectangleBoxes.nCols);
+        int BoxYRec = FindBox(p[i].y, s.RectangleBoxes(0, 0).GetLy(), s.RectangleBoxes.nRows);
+
+        for (size_t l = 0; l < s.RectangleBoxes(BoxYRec, BoxXRec).GetIn(); ++l)
+        {
+            size_t ll = s.RectangleBoxes(BoxYRec, BoxXRec).GetIndex(l);
+            retPin += s.rect[ll].Inside(p[i].x, p[i].y) * 10000.0;
+        }
     }
 
     for (size_t i = 0; i < s.nParticles; ++i)
@@ -135,58 +162,9 @@ double Potential(const Simulator &s, const Particle *p)
         int BoxYPart = FindBox(p[i].y, s.PartPotentialBoxes(0, 0).GetLy(), s.PartPotentialBoxes.nRows);
 
         retPart += InteractWithBoxPotential<Particle, true>(i, p[i].x, p[i].y, BoxXPart, BoxYPart, s.Lx, s.Ly, s.PartPotentialBoxes, p, s.PartPotentialTable);
-        // printf("%f\n", InteractWithBoxPotential<Particle, true>(i, p[i].x, p[i].y, BoxXPart, BoxYPart, s.Lx, s.Ly, s.PartPotentialBoxes, p, s.PartPotentialTable));
     }
     return retPin + retPart / 2.0;
 }
-
-/*void InteractWithBoxParticle(const size_t &ic, const double &x, const double &y, const size_t iX, const size_t iY, const double &Lx, const double &Ly, 
-                     const Matrix<Box> &Box, const Particle *p, const Table &table, double &fxO, double &fyO)
-{
-    double fx_ = 0.0, fy_ = 0.0;
-    for (int i = -1; i <= 1; ++i)
-    {
-        int iBx = (int)iX + i;
-        bool left = iBx < 0;
-        bool right = iBx >= (int)Box.nCols;
-        if (right)
-        {
-            iBx = 0;
-        }
-        else if (left)
-        {
-            iBx = Box.nCols - 1;
-        }
-        int factorX = right - left;
-        for (int j = -1; j <= 1; ++j)
-        {
-            int iBy = (int)iY + j;
-            bool down = iBy < 0;
-            bool up = iBy >= (int)Box.nRows;
-            if (up)
-            {
-                iBy = 0;
-            }
-            else if (down)
-            {
-                iBy = Box.nRows - 1;
-            }
-            int factorY = up - down;
-
-            for (size_t iB = 0; iB < Box(iBy, iBx).GetIn(); ++iB)
-            {
-                double fx, fy;
-                size_t I = Box(iBy, iBx).GetIndex(iB);
-                // if (ignore) { if (I == ic) { continue; } }
-                Particle::Force(&p[I], x - factorX * Lx, y - factorY * Ly, table, &fx, &fy);
-                fx_ += fx;
-                fy_ += fy;
-            }
-        }
-    }
-    fxO = fx_;
-    fyO = fy_;
-}*/
 
 void Force(const double &x, const double &y, const size_t &i, const double &t, const Simulator &sim, double &fxO, double &fyO)
 {
