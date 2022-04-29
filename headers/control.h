@@ -125,12 +125,31 @@ double Potential(const Simulator &s, const Particle *p)
     for (size_t i = 0; i < s.nParticles; ++i)
     {
 
-        for (size_t II = 0; II < s.nrec; ++II)
+        int BoxXCirc = FindBox(p[i].x, s.CircleBoxes(0, 0).GetLx(), s.CircleBoxes.nCols);
+        int BoxYCirc = FindBox(p[i].y, s.CircleBoxes(0, 0).GetLy(), s.CircleBoxes.nRows);
+
+        for (size_t l = 0; l < s.CircleBoxes(BoxYCirc, BoxXCirc).GetIn(); ++l)
         {
-            if (s.rect[II].Inside(p[i].x, p[i].y))
-            {
-                return 1.0e10;
-            }
+            size_t ll = s.CircleBoxes(BoxYCirc, BoxXCirc).GetIndex(l);
+            retPin += s.circ[ll].Inside(p[i].x, p[i].y) * 10000.0;
+        }
+
+        int BoxXTri = FindBox(p[i].x, s.TrianguleBoxes(0, 0).GetLx(), s.TrianguleBoxes.nCols);
+        int BoxYTri = FindBox(p[i].y, s.TrianguleBoxes(0, 0).GetLy(), s.TrianguleBoxes.nRows);
+
+        for (size_t l = 0; l < s.TrianguleBoxes(BoxYTri, BoxXTri).GetIn(); ++l)
+        {
+            size_t ll = s.TrianguleBoxes(BoxYTri, BoxXTri).GetIndex(l);
+            retPin += s.triang[ll].Inside(p[i].x, p[i].y) * 10000.0;
+        }
+
+        int BoxXRec = FindBox(p[i].x, s.RectangleBoxes(0, 0).GetLx(), s.RectangleBoxes.nCols);
+        int BoxYRec = FindBox(p[i].y, s.RectangleBoxes(0, 0).GetLy(), s.RectangleBoxes.nRows);
+
+        for (size_t l = 0; l < s.RectangleBoxes(BoxYRec, BoxXRec).GetIn(); ++l)
+        {
+            size_t ll = s.RectangleBoxes(BoxYRec, BoxXRec).GetIndex(l);
+            retPin += s.rect[ll].Inside(p[i].x, p[i].y) * 10000.0;
         }
 
         int BoxXLine = FindBox(p[i].x, s.LinePotentialBoxes(0, 0).GetLx(), s.LinePotentialBoxes.nCols);
