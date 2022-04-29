@@ -192,7 +192,7 @@ typedef struct Simulator
                 }
             }
         }
-        if (aux)
+        if (nlines)
             delete[] aux;
 
         double R0Max = lines[0].R;
