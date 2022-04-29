@@ -173,6 +173,8 @@ typedef struct Simulator
 
         LineSegment *aux = new LineSegment[nlines];
         memcpy((void*)aux, (void*)lines, sizeof(LineSegment) * nlines);
+        if (nlines)
+            delete[] lines;
         lines = new LineSegment[9 * nlines];
 
         size_t k = 0;
@@ -204,6 +206,8 @@ typedef struct Simulator
         LinePotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange()), 9 * nlines, Lx, Ly);
         LineForceBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange()), 9 * nlines, Lx, Ly);
 
+        double fatB = 10.0;
+
         for (size_t i = 0; i < LinePotentialBoxes.nRows; ++i)
         {
             for (size_t j = 0; j < LinePotentialBoxes.nCols; ++j)
@@ -212,9 +216,9 @@ typedef struct Simulator
 
                 for (size_t l = 0; l < 9 * nlines; ++l)
                 {
-                    for (double x = LinePotentialBoxes(i, j).GetX(); x <= LinePotentialBoxes(i, j).GetX() + LinePotentialBoxes(i, j).GetLx(); x += LinePotentialBoxes(i, j).GetLx() / 50.0)
+                    for (double x = LinePotentialBoxes(i, j).GetX(); x <= LinePotentialBoxes(i, j).GetX() + LinePotentialBoxes(i, j).GetLx(); x += LinePotentialBoxes(i, j).GetLx() / fatB)
                     {
-                        for (double y = LinePotentialBoxes(i, j).GetY(); y <= LinePotentialBoxes(i, j).GetY() + LinePotentialBoxes(i, j).GetLy(); y += LinePotentialBoxes(i, j).GetLy() / 50.0)
+                        for (double y = LinePotentialBoxes(i, j).GetY(); y <= LinePotentialBoxes(i, j).GetY() + LinePotentialBoxes(i, j).GetLy(); y += LinePotentialBoxes(i, j).GetLy() / fatB)
                         {
                             if (LineSegment::Potential(&lines[l], x, y, PinPotentialTable) > cut)
                             {
@@ -240,9 +244,9 @@ typedef struct Simulator
 
                 for (size_t l = 0; l < 9 * nlines; ++l)
                 {
-                    for (double x = LineForceBoxes(i, j).GetX(); x <= LineForceBoxes(i, j).GetX() + LineForceBoxes(i, j).GetLx(); x += LineForceBoxes(i, j).GetLx() / 50.0)
+                    for (double x = LineForceBoxes(i, j).GetX(); x <= LineForceBoxes(i, j).GetX() + LineForceBoxes(i, j).GetLx(); x += LineForceBoxes(i, j).GetLx() / fatB)
                     {
-                        for (double y = LineForceBoxes(i, j).GetY(); y <= LineForceBoxes(i, j).GetY() + LineForceBoxes(i, j).GetLy(); y += LineForceBoxes(i, j).GetLy() / 50.0)
+                        for (double y = LineForceBoxes(i, j).GetY(); y <= LineForceBoxes(i, j).GetY() + LineForceBoxes(i, j).GetLy(); y += LineForceBoxes(i, j).GetLy() / fatB)
                         {
                             double fx = 0.0, fy = 0.0;
                             LineSegment::Force(&lines[l], x, y, PinForceTable, &fx, &fy);
@@ -320,9 +324,9 @@ typedef struct Simulator
 
                 for (size_t I = 0; I < ncir; ++I)
                 {
-                    for (double x = CircleBoxes(i, j).GetX(); x <= CircleBoxes(i, j).GetX() + CircleBoxes(i, j).GetLx(); x += CircleBoxes(i, j).GetLx() / 50.0)
+                    for (double x = CircleBoxes(i, j).GetX(); x <= CircleBoxes(i, j).GetX() + CircleBoxes(i, j).GetLx(); x += CircleBoxes(i, j).GetLx() / fatB)
                     {
-                        for (double y = CircleBoxes(i, j).GetY(); y <= CircleBoxes(i, j).GetY() + CircleBoxes(i, j).GetLy(); y += CircleBoxes(i, j).GetLy() / 50.0)
+                        for (double y = CircleBoxes(i, j).GetY(); y <= CircleBoxes(i, j).GetY() + CircleBoxes(i, j).GetLy(); y += CircleBoxes(i, j).GetLy() / fatB)
                         {
                             if (circ[I].Inside(x, y))
                             {
