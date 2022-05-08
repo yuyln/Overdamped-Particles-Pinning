@@ -35,7 +35,7 @@ typedef struct Simulator
 
     Matrix<Box> PartPotentialBoxes, PartForceBoxes;
     Matrix<Box> LinePotentialBoxes, LineForceBoxes;
-    Matrix<Box> TrianguleBoxes, RectangleBoxes, CircleBoxes;
+    // Matrix<Box> TrianguleBoxes, RectangleBoxes, CircleBoxes;
     Particle *parts;
     Particle *parts1;
     size_t nlines;
@@ -80,9 +80,9 @@ typedef struct Simulator
         PartPotentialBoxes.ClearMatrix();
         LineForceBoxes.ClearMatrix();
         LinePotentialBoxes.ClearMatrix();
-        TrianguleBoxes.ClearMatrix();
-        CircleBoxes.ClearMatrix();
-        RectangleBoxes.ClearMatrix();
+        // TrianguleBoxes.ClearMatrix();
+        // CircleBoxes.ClearMatrix();
+        // RectangleBoxes.ClearMatrix();
 
         delete[] parts; delete[] parts1;
         delete[] lines;
@@ -107,7 +107,6 @@ typedef struct Simulator
         {
             betaQnt[parts[i].betadamp]++;
         }
-
         FILE *f = fopen("./input/input.in", "rb");
         char *data = ReadFile(f);
         fclose(f);
@@ -169,7 +168,6 @@ typedef struct Simulator
         PartForceBoxes = CreateBoxes(PartForceTable.getMaxRange(), nParticles, Lx, Ly);
         AttBoxes(nParticles, parts, &PartPotentialBoxes);
         AttBoxes(nParticles, parts, &PartForceBoxes);
-
 
         LineSegment *aux = new LineSegment[nlines];
         memcpy((void*)aux, (void*)lines, sizeof(LineSegment) * nlines);
@@ -273,13 +271,13 @@ typedef struct Simulator
         ncir = (size_t)ReadCircles(&circ);
         ntri = (size_t)ReadTriangules(&triang);
 
-        double minp = Lx < Ly? Lx: Ly;
+        // double minp = Lx < Ly? Lx: Ly;
 
-        TrianguleBoxes = CreateBoxes(minp / 10.0, ntri, Lx, Ly);
-        CircleBoxes = CreateBoxes(minp / 10.0, ncir, Lx, Ly);
-        RectangleBoxes = CreateBoxes(minp / 10.0, nrec, Lx, Ly);
+        // TrianguleBoxes = CreateBoxes(minp / 10.0, ntri, Lx, Ly);
+        // CircleBoxes = CreateBoxes(minp / 10.0, ncir, Lx, Ly);
+        // RectangleBoxes = CreateBoxes(minp / 10.0, nrec, Lx, Ly);
 
-        for (size_t i = 0; i < TrianguleBoxes.nRows; ++i)
+ /*       for (size_t i = 0; i < TrianguleBoxes.nRows; ++i)
         {
             for (size_t j = 0; j < TrianguleBoxes.nCols; ++j)
             {
@@ -346,7 +344,7 @@ typedef struct Simulator
                 }
 
             }
-        }
+        }*/
 
         if (CreateFoldersEtc)
         {
@@ -572,7 +570,22 @@ typedef struct Simulator
                     p += LineSegment::Potential(&lines[ll], x, y, PinPotentialTable);
                 }
 
-                int BoxXCirc = FindBox_(x, CircleBoxes(0, 0).GetLx(), CircleBoxes.nCols);
+                for (size_t t = 0; t < ntri; ++t)
+                {
+                    p += 100000.0;
+                }
+
+                for (size_t t = 0; t < nrec; ++t)
+                {
+                    p += 100000.0;
+                }
+
+                for (size_t t = 0; t < ncir; ++t)
+                {
+                    p += 100000.0;
+                }
+
+                /*int BoxXCirc = FindBox_(x, CircleBoxes(0, 0).GetLx(), CircleBoxes.nCols);
                 int BoxYCirc = FindBox_(y, CircleBoxes(0, 0).GetLy(), CircleBoxes.nRows);
 
                 for (size_t l = 0; l < CircleBoxes(BoxYCirc, BoxXCirc).GetIn(); ++l)
@@ -597,7 +610,7 @@ typedef struct Simulator
                 {
                     size_t ll = RectangleBoxes(BoxYRec, BoxXRec).GetIndex(l);
                     p += rect[ll].Inside(x, y) * 10000.0;
-                }
+                }*/
 
                 fprintf(f, "%f\t%f\t%.15f\n", x, y, p);
             }
