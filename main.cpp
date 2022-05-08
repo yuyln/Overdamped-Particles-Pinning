@@ -25,11 +25,12 @@ int main()
     //      output simulator object    (V)
     //      GSA                        (V?) 
     //      Fix Bug no pinning         (V)
-    //      Multithread GSA            (X)
+    //      Multithread GSA            (V)
     //      Multithread Integration    (V)
     //      Test generalized forces/potential (V)  <- <- Compare to paper
     //      Check every snprintf, i think i forgot a +1 on every call         (X)
     //      More general tables        (V)
+    //      Fix Regions Boxes          (X)
 
     GSAParams *gsap;
     int nparams = ReadGSAParams(&gsap);
