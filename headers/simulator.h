@@ -26,6 +26,30 @@ int FindBox_(const double &p, const double &BoxSize, const size_t &nMax)
     return Box;
 }
 
+void Boundary_(Particle *parts, size_t nParticles, double Lx, double Ly)
+{
+    for (size_t i = 0; i < nParticles; ++i)
+    {
+        if (parts[i].x > Lx)
+        {
+            parts[i].x -= Lx;
+        }
+        else if (parts[i].x < 0.0)
+        {
+            parts[i].x += Lx;
+        }
+
+        if (parts[i].y > Ly)
+        {
+            parts[i].y -= Ly;
+        }
+        else if (parts[i].y < 0.0)
+        {
+            parts[i].y += Ly;
+        }
+    }
+}
+
 
 
 typedef struct Simulator
@@ -164,6 +188,8 @@ typedef struct Simulator
 
         FC = 0.0;
 
+        Boundary_(parts, nParticles, Lx, Ly);
+        Boundary_(parts1, nParticles, Lx, Ly);
         PartPotentialBoxes = CreateBoxes(PartPotentialTable.getMaxRange(), nParticles, Lx, Ly);
         PartForceBoxes = CreateBoxes(PartForceTable.getMaxRange(), nParticles, Lx, Ly);
         AttBoxes(nParticles, parts, &PartPotentialBoxes);
@@ -572,17 +598,17 @@ typedef struct Simulator
 
                 for (size_t t = 0; t < ntri; ++t)
                 {
-                    p += 100000.0;
+                    p += triang[t].Inside(x, y) * 100000.0;
                 }
 
                 for (size_t t = 0; t < nrec; ++t)
                 {
-                    p += 100000.0;
+                    p += rect[t].Inside(x, y) * 100000.0;
                 }
 
                 for (size_t t = 0; t < ncir; ++t)
                 {
-                    p += 100000.0;
+                    p += circ[t].Inside(x, y) * 100000.0;
                 }
 
                 /*int BoxXCirc = FindBox_(x, CircleBoxes(0, 0).GetLx(), CircleBoxes.nCols);
