@@ -220,17 +220,21 @@ typedef struct Simulator
             delete[] aux;
 
         double R0Max = lines[0].R;
+        double U0Max = fabs(lines[0].U0);
 
         for (size_t i = 0; i < 9 * nlines; ++i)
         {
             if (lines[i].R > R0Max)
                 R0Max = lines[i].R;
+            if (lines[i].U0 > U0Max)
+                U0Max = lines[i].U0;
         }
         if (nlines == 0)
             R0Max = 1.0;
+            U0Max = 1.0;
 
-        LinePotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange()), 9 * nlines, Lx, Ly);
-        LineForceBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange()), 9 * nlines, Lx, Ly);
+        LinePotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(U0Max)), 9 * nlines, Lx, Ly);
+        LineForceBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(U0Max)), 9 * nlines, Lx, Ly);
 
         double fatB = 10.0;
 

@@ -374,7 +374,7 @@ void IntegrationMult(Simulator &s, const char *prefixSave, const char *suffixSav
         double betadamp = i->first;
         char *name;
         size_t size = snprintf(NULL, 0, "./out/velocity_per_beta/velocity_%.5f.out", betadamp) + 1;
-        name = new char[size];
+        name = new char[size + 1];
         snprintf(name, size, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
         FILE *f = fopen(name, "a");
         delete[] name;
@@ -417,7 +417,7 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
         double betadamp = i->first;
         char *name;
         size_t size = snprintf(NULL, 0, "./out/velocity_per_beta/velocity_%.5f.out", betadamp) + 1;
-        name = new char[size];
+        name = new char[size + 1];
         snprintf(name, size, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
         FILE *f = fopen(name, "a");
         delete[] name;
