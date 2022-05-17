@@ -151,8 +151,10 @@ typedef struct Simulator
                 U0Max = pins[i].U0;
         }
         if (nPinnings == 0)
+        {
             R0Max = 1.0;
             U0Max = 1.0;
+        }
 
         FC = 0.0;
 
