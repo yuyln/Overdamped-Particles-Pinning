@@ -147,8 +147,8 @@ typedef struct Simulator
         {
             if (pins[i].R0 > R0Max)
                 R0Max = pins[i].R0;
-            if (pins[i].U0 > U0Max)
-                U0Max = pins[i].U0;
+            if (fabs(pins[i].U0) > U0Max)
+                U0Max = fabs(pins[i].U0);
         }
         if (nPinnings == 0)
         {
@@ -158,8 +158,8 @@ typedef struct Simulator
 
         FC = 0.0;
 
-        PinPotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(U0Max)), nPinnings, Lx, Ly);
-        PinForceBoxes = CreateBoxes(R0Max * sqrt(PinForceTable.getMaxRange() + log(U0Max)), nPinnings, Lx, Ly);
+        PinPotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(fabs(U0Max))), nPinnings, Lx, Ly);
+        PinForceBoxes = CreateBoxes(R0Max * sqrt(PinForceTable.getMaxRange() + log(fabs(U0Max))), nPinnings, Lx, Ly);
         PartPotentialBoxes = CreateBoxes(PartPotentialTable.getMaxRange(), nParticles, Lx, Ly);
         PartForceBoxes = CreateBoxes(PartForceTable.getMaxRange(), nParticles, Lx, Ly);
 
