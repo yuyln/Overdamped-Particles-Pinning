@@ -226,8 +226,8 @@ typedef struct Simulator
         {
             if (lines[i].R > R0Max)
                 R0Max = lines[i].R;
-            if (lines[i].U0 > U0Max)
-                U0Max = lines[i].U0;
+            if (fabs(lines[i].U0) > U0Max)
+                U0Max = fabs(lines[i].U0);
         }
         if (nlines == 0)
         {
@@ -235,8 +235,8 @@ typedef struct Simulator
             U0Max = 1.0;
         }
 
-        LinePotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(U0Max)), 9 * nlines, Lx, Ly);
-        LineForceBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(U0Max)), 9 * nlines, Lx, Ly);
+        LinePotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(fabs(U0Max))), 9 * nlines, Lx, Ly);
+        LineForceBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(fabs(U0Max))), 9 * nlines, Lx, Ly);
 
         double fatB = 10.0;
 
