@@ -230,8 +230,10 @@ typedef struct Simulator
                 U0Max = lines[i].U0;
         }
         if (nlines == 0)
+        {
             R0Max = 1.0;
             U0Max = 1.0;
+        }
 
         LinePotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(U0Max)), 9 * nlines, Lx, Ly);
         LineForceBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(U0Max)), 9 * nlines, Lx, Ly);
