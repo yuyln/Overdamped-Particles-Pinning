@@ -128,7 +128,7 @@ double Potential(const Simulator &s, const Particle *p)
 
         retPin += InteractWithBoxPotential<Pinning, false>(i, p[i].x, p[i].y, BoxXPin, BoxYPin, s.Lx, s.Ly, s.PinPotentialBoxes, s.pins, s.PinPotentialTable);
 
-        int BoxXCirc = FindBox(p[i].x, s.CircleBoxes(0, 0).GetLx(), s.CircleBoxes.nCols);
+/*        int BoxXCirc = FindBox(p[i].x, s.CircleBoxes(0, 0).GetLx(), s.CircleBoxes.nCols);
         int BoxYCirc = FindBox(p[i].y, s.CircleBoxes(0, 0).GetLy(), s.CircleBoxes.nRows);
 
         for (size_t l = 0; l < s.CircleBoxes(BoxYCirc, BoxXCirc).GetIn(); ++l)
@@ -153,7 +153,7 @@ double Potential(const Simulator &s, const Particle *p)
         {
             size_t ll = s.RectangleBoxes(BoxYRec, BoxXRec).GetIndex(l);
             retPin += s.rect[ll].Inside(p[i].x, p[i].y) * 10000.0;
-        }
+        }*/
     }
 
     for (size_t i = 0; i < s.nParticles; ++i)
@@ -345,7 +345,7 @@ void IntegrationMult(Simulator &s, const char *prefixSave, const char *suffixSav
         double betadamp = i->first;
         char *name;
         size_t size = snprintf(NULL, 0, "./out/velocity_per_beta/velocity_%.5f.out", betadamp) + 1;
-        name = new char[size];
+        name = new char[size + 1];
         snprintf(name, size, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
         FILE *f = fopen(name, "a");
         delete[] name;
@@ -388,7 +388,7 @@ void Integration(Simulator &s, const char *prefixSave, const char *suffixSave)
         double betadamp = i->first;
         char *name;
         size_t size = snprintf(NULL, 0, "./out/velocity_per_beta/velocity_%.5f.out", betadamp) + 1;
-        name = new char[size];
+        name = new char[size + 1];
         snprintf(name, size, "./out/velocity_per_beta/velocity_%.5f.out", betadamp);
         FILE *f = fopen(name, "a");
         delete[] name;

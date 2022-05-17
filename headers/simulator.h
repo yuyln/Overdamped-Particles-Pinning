@@ -17,7 +17,7 @@ typedef struct Simulator
 
     Matrix<Box> PinPotentialBoxes, PinForceBoxes,
                 PartPotentialBoxes, PartForceBoxes;
-    Matrix<Box> TrianguleBoxes, RectangleBoxes, CircleBoxes;
+    //Matrix<Box> TrianguleBoxes, RectangleBoxes, CircleBoxes;
     Pinning *pins;
     Particle *parts;
     Particle *parts1;
@@ -60,9 +60,9 @@ typedef struct Simulator
         PartPotentialBoxes.ClearMatrix();
         PinForceBoxes.ClearMatrix();
         PinPotentialBoxes.ClearMatrix();
-        TrianguleBoxes.ClearMatrix();
+/*        TrianguleBoxes.ClearMatrix();
         CircleBoxes.ClearMatrix();
-        RectangleBoxes.ClearMatrix();
+        RectangleBoxes.ClearMatrix();*/
 
         delete[] parts; delete[] parts1;
         delete[] pins;
@@ -140,22 +140,24 @@ typedef struct Simulator
         range = FindRange(0.0001, 0.21e-3, 0.0, sqrt(Lx * Lx + Ly * Ly), [](double x) { return BESSK1(x) / x; });
         PartForceTable = Table(1e6, 0.0001, range, BESSK1(0.0001) / 0.0001, 0.0, [](double x){ return BESSK1(x) / x; });
 
-        double R0Max = 0.0;
-        for (size_t i = 0; i < nPinnings; ++i)
+        double R0Max = pins[0].R0;
+        double U0Max = fabs(pins[0].U0);
+
+        for (size_t i = 0; i < 9 * nPinnings; ++i)
         {
-            if (pins[i].R0 >= R0Max)
-            {
+            if (pins[i].R0 > R0Max)
                 R0Max = pins[i].R0;
-            }
+            if (pins[i].U0 > U0Max)
+                U0Max = pins[i].U0;
         }
         if (nPinnings == 0)
-        {
             R0Max = 1.0;
-        }
+            U0Max = 1.0;
+
         FC = 0.0;
 
-        PinPotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange()), nPinnings, Lx, Ly);
-        PinForceBoxes = CreateBoxes(R0Max * sqrt(PinForceTable.getMaxRange()), nPinnings, Lx, Ly);
+        PinPotentialBoxes = CreateBoxes(R0Max * sqrt(PinPotentialTable.getMaxRange() + log(U0Max)), nPinnings, Lx, Ly);
+        PinForceBoxes = CreateBoxes(R0Max * sqrt(PinForceTable.getMaxRange() + log(U0Max)), nPinnings, Lx, Ly);
         PartPotentialBoxes = CreateBoxes(PartPotentialTable.getMaxRange(), nParticles, Lx, Ly);
         PartForceBoxes = CreateBoxes(PartForceTable.getMaxRange(), nParticles, Lx, Ly);
 
@@ -168,7 +170,7 @@ typedef struct Simulator
         ncir = (size_t)ReadCircles(&circ);
         ntri = (size_t)ReadTriangules(&triang);
 
-        double minp = Lx < Ly? Lx: Ly;
+/*        double minp = Lx < Ly? Lx: Ly;
 
         TrianguleBoxes = CreateBoxes(minp / 10.0, ntri, Lx, Ly);
         CircleBoxes = CreateBoxes(minp / 10.0, ncir, Lx, Ly);
@@ -241,7 +243,7 @@ typedef struct Simulator
                 }
 
             }
-        }
+        }*/
 
         if (CreateFoldersEtc)
         {
